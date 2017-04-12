@@ -81,6 +81,7 @@ gulp.task('gh-pages', ['build'], function() {
 		'./demo/style.css',
 		'./dist/**/*',
 		'./node_modules/angular/angular.min.js',
+		'./node_modules/angular-gravatar/build/angular-gravatar.min.js',
 		'./node_modules/bootstrap/dist/css/bootstrap.min.css',
 		'./node_modules/bootstrap/dist/js/bootstrap.min.js',
 		'./node_modules/font-awesome/css/font-awesome.min.css',
