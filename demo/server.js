@@ -27,16 +27,12 @@ app.get('/app.js', function(req, res) {
 	res.sendFile('app.js', {root: root + '/demo'});
 });
 
-app.get('/style.css', function(req, res) {
-	res.sendFile('style.css', {root: root + '/demo'});
+app.get('/dist/angular-ui-history.js', function(req, res) {
+	res.sendFile('angular-ui-history.js', {root: root + '/dist'});
 });
 
-app.get('/dist/angular-ui-scribble.js', function(req, res) {
-	res.sendFile('angular-ui-scribble.js', {root: root + '/dist'});
-});
-
-app.get('/dist/angular-ui-scribble.css', function(req, res) {
-	res.sendFile('angular-ui-scribble.css', {root: root + '/dist'});
+app.get('/dist/angular-ui-history.css', function(req, res) {
+	res.sendFile('angular-ui-history.css', {root: root + '/dist'});
 });
 
 app.use(function(err, req, res, next){
