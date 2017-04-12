@@ -20,6 +20,7 @@
   "devDependencies": {
     "babel-preset-es2015": "^6.24.1",
     "express": "^4.15.2",
+    "font-awesome": "^4.7.0",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
     "gulp-clean-css": "^3.0.4",
@@ -29,11 +30,11 @@
     "gulp-rename": "^1.2.2",
     "gulp-uglify": "^2.1.2",
     "gulp-watch": "^4.3.11",
-    "font-awesome": "^4.7.0",
     "rimraf": "^2.6.1"
   },
   "dependencies": {
     "angular": "^1.6.4",
+    "angular-gravatar": "^0.4.2",
     "bootstrap": "^3.3.7"
   }
 }
