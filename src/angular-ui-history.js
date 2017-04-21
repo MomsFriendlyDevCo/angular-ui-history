@@ -5,6 +5,7 @@ angular.module('angular-ui-history',[
 	bindings: {
 		allowPost: '<',
 		queryUrl: '<',
+		postUrl: '<',
 		catcher: '<',
 	},
 	template: `
@@ -50,7 +51,27 @@ angular.module('angular-ui-history',[
 				</div>
 			</div>
 			<div ng-if="$ctrl.allowPost">
-				<textarea ng-model="$ctrl.newPost.body"></textarea>
+				<hr/>
+				<div ng-show="$ctrl.isPosting" class="text-center">
+					<h3><i class="fa fa-spinner fa-spin"></i> Posting...</h3>
+				</div>
+				<div ng-show="!$ctrl.isPosting">
+					<form ng-submit="$ctrl.makePost()" class="form-horizontal">
+						<div class="form-group">
+							<div class="col-sm-12">
+								<textarea ng-model="$ctrl.newPost.body" class="form-control" rows="10"></textarea>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-12 text-right">
+								<button type="submit" class="btn btn-success">
+									<i class="fa fa-plus"></i>
+									Post
+								</button>
+							</div>
+						</div>
+					</form>
+				</div>
 			</div>
 		</div>
 	`,
@@ -79,9 +100,23 @@ angular.module('angular-ui-history',[
 		// }}}
 
 		// .newPost - New post contents {{{
+		$ctrl.isPosting = false;
 		$ctrl.newPost = {body: ''};
 
 		$ctrl.makePost = ()=> {
+			if (!$ctrl.allowPost) throw new Error('Posting not allowed');
+
+			var resolvedUrl = angular.isString($ctrl.postUrl) ? $ctrl.postUrl : $ctrl.postUrl($ctrl);
+			if (!resolvedUrl) throw new Error('Resovled POST URL is empty');
+
+			$ctrl.isPosting = true;
+			$http.post(resolvedUrl, $ctrl.newPost)
+				.then(()=> $ctrl.newPost.body = '')
+				.then(()=> $ctrl.refresh())
+				.catch($ctrl.catcher)
+				.finally(()=> $ctrl.isPosting = false);
+
+			$http.get(resolvedUrl)
 		};
 		// }}}
 
