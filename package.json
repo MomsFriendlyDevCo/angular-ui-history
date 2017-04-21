@@ -39,6 +39,7 @@
     "angular-gravatar": "^0.4.2",
     "angular-relative-date": "^2.1.0",
     "bootstrap": "^3.3.7",
-    "jquery": "^3.2.1"
+    "jquery": "^3.2.1",
+    "ng-quill": "^3.1.0"
   }
 }

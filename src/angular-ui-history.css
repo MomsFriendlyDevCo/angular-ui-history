@@ -13,6 +13,14 @@
 	z-index: 100;
 }
 
+.ui-history [ng-quill-editor] {
+	display: block;
+}
+
+.ui-history ng-quill-toolbar a.btn.btn-success {
+	color: #fff;
+}
+
 /* type=user.comment {{{ */
 .ui-history .ui-history-user-comment {
 	position: relative;

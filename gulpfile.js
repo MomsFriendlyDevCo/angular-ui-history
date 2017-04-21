@@ -92,6 +92,9 @@ gulp.task('gh-pages', ['build'], function() {
 		'./node_modules/font-awesome/fonts/fontawesome-webfont.ttf',
 		'./node_modules/font-awesome/fonts/fontawesome-webfont.woff',
 		'./node_modules/font-awesome/fonts/fontawesome-webfont.woff2',
+		'./node_modules/quill/dist/quill.min.js',
+		'./node_modules/ng-quill/dist/ng-quill.min.js',
+		'./node_modules/quill/dist/quill.snow.css',
 	], {base: __dirname})
 		.pipe(rename(function(path) {
 			if (path.dirname == 'demo') { // Move all demo files into root

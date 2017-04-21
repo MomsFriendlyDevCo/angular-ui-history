@@ -1,8 +1,8 @@
 [
-	{"_id": 0, "type": "user.comment", "date": "2017-04-07T10:52:19.163Z", "user": {"name": "Mr Foo.", "email": "foo@test.com"}, "body": "Foo!"},
-	{"_id": 1, "type": "user.comment", "date": "2017-04-15T08:17:23.342Z", "user": {"name": "Mr Bar.", "email": "bar@test.com"}, "title": "Title for Bar!", "body": "Bar Body!"},
+	{"_id": 0, "type": "user.comment", "date": "2017-04-07T10:52:19.163Z", "user": {"name": "Mr Foo.", "email": "foo@test.com"}, "body": "First Post!"},
+	{"_id": 1, "type": "user.comment", "date": "2017-04-15T08:17:23.342Z", "user": {"name": "Mr Bar.", "email": "bar@test.com"}, "title": "Title for a another post!", "body": "Another post"},
 	{"_id": 2, "type": "system.change", "date": "2017-04-16T02:29:34.231Z", "field": "status", "from": "Draft", "to": "Active"},
-	{"_id": 3, "type": "user.comment", "date": "2017-04-18T04:16:21.123Z", "user": {"name": "Mr Baz.", "email": "baz@test.com"}, "body": "Baz!"},
-	{"_id": 4, "type": "user.change", "date": "2017-04-20T03:46:12.215Z", "user": {"name": "Mr Baz.", "email": "baz@test.com", "url": "http://mfdc.biz"}, "field": "status", "from": "Active", "to": "Draft"},
-	{"_id": 5, "type": "user.comment", "date": "2017-04-21T01:36:57.163Z", "user": {"name": "Mr Foo.", "email": "foo@test.com"}, "body": "Foo!"}
+	{"_id": 3, "type": "user.comment", "date": "2017-04-18T04:16:21.123Z", "user": {"name": "Mr Baz.", "email": "baz@test.com", "url": "http://mfdc.biz"}, "body": "Yet another post. This time the user avatar is a link."},
+	{"_id": 4, "type": "user.change", "date": "2017-04-20T03:46:12.215Z", "user": {"name": "Mr Baz.", "email": "baz@test.com"}, "field": "status", "from": "Active", "to": "Draft"},
+	{"_id": 5, "type": "user.comment", "date": "2017-04-21T01:36:57.163Z", "user": {"name": "Mr Foo.", "email": "foo@test.com"}, "body": "<strong>Bold</strong>, <em>Italics!</em>, <u>Underline!</u>"}
 ]

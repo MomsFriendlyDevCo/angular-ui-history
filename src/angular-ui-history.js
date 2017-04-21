@@ -1,5 +1,6 @@
 angular.module('angular-ui-history',[
 	'angular-bs-tooltip',
+	'ngQuill',
 	'relativeDate',
 	'ui.gravatar',
 ])
@@ -39,7 +40,7 @@ angular.module('angular-ui-history',[
 					</div>
 					<div class="ui-history-user-comment-main">
 						<div ng-if="post.title" class="ui-history-user-comment-header">{{post.title}}</div>
-						<div class="ui-history-user-comment-body">{{post.body}}</div>
+						<div class="ui-history-user-comment-body" ng-bind-html="post.body"></div>
 					</div>
 				</div>
 				<div ng-switch-when="system.change" class="ui-history-system-change">
@@ -61,16 +62,123 @@ angular.module('angular-ui-history',[
 				<div ng-show="!$ctrl.isPosting">
 					<form ng-submit="$ctrl.makePost()" class="form-horizontal">
 						<div class="form-group">
-							<div class="col-sm-12">
-								<textarea ng-model="$ctrl.newPost.body" class="form-control" rows="10"></textarea>
-							</div>
-						</div>
-						<div class="form-group">
-							<div class="col-sm-12 text-right">
-								<button type="submit" class="btn btn-success">
-									<i class="fa fa-plus"></i>
-									Post
-								</button>
+							<div class="col-sm-12" style="height: 250px; margin-bottom: 50px">
+								<ng-quill-editor ng-model="$ctrl.newPost.body" placeholder="Leave a comment...">
+									<!-- ng-quill toolbar config {{{ -->
+									<ng-quill-toolbar>
+										<div>
+											<span class="ql-formats">
+												<button class="ql-bold" ng-attr-title="{{'Bold'}}"></button>
+												<button class="ql-italic" ng-attr-title="{{'Italic'}}"></button>
+												<button class="ql-underline" ng-attr-title="{{'Underline'}}"></button>
+												<button class="ql-strike" ng-attr-title="{{'Strikethough'}}"></button>
+											</span>
+											<span class="ql-formats">
+												<button class="ql-blockquote" ng-attr-title="{{'Block Quote'}}"></button>
+												<button class="ql-code-block" ng-attr-title="{{'Code Block'}}"></button>
+											</span>
+											<span class="ql-formats">
+												<button class="ql-header" value="1" ng-attr-title="{{'Header 1'}}"></button>
+												<button class="ql-header" value="2" ng-attr-title="{{'Header 2'}}"></button>
+											</span>
+											<span class="ql-formats">
+												<button class="ql-list" value="ordered" ng-attr-title="{{'Numered list'}}"></button>
+												<button class="ql-list" value="bullet" ng-attr-title="{{'Bulleted list'}}"></button>
+												<button class="ql-indent" value="-1" ng-attr-title="{{'De-indent'}}"></button>
+												<button class="ql-indent" value="+1" ng-attr-title="{{'Indent'}}"></button>
+											</span>
+											<span class="ql-formats">
+												<select class="ql-color" ng-attr-title="{{'Text color'}}">
+													<option selected="selected"></option>
+													<option value="#e60000"></option>
+													<option value="#ff9900"></option>
+													<option value="#ffff00"></option>
+													<option value="#008a00"></option>
+													<option value="#0066cc"></option>
+													<option value="#9933ff"></option>
+													<option value="#ffffff"></option>
+													<option value="#facccc"></option>
+													<option value="#ffebcc"></option>
+													<option value="#ffffcc"></option>
+													<option value="#cce8cc"></option>
+													<option value="#cce0f5"></option>
+													<option value="#ebd6ff"></option>
+													<option value="#bbbbbb"></option>
+													<option value="#f06666"></option>
+													<option value="#ffc266"></option>
+													<option value="#ffff66"></option>
+													<option value="#66b966"></option>
+													<option value="#66a3e0"></option>
+													<option value="#c285ff"></option>
+													<option value="#888888"></option>
+													<option value="#a10000"></option>
+													<option value="#b26b00"></option>
+													<option value="#b2b200"></option>
+													<option value="#006100"></option>
+													<option value="#0047b2"></option>
+													<option value="#6b24b2"></option>
+													<option value="#444444"></option>
+													<option value="#5c0000"></option>
+													<option value="#663d00"></option>
+													<option value="#666600"></option>
+													<option value="#003700"></option>
+													<option value="#002966"></option>
+													<option value="#3d1466"></option>
+												</select>
+												<select class="ql-background" ng-attr-title="{{'Background color'}}">
+													<option selected="selected"></option>
+													<option value="#e60000"></option>
+													<option value="#ff9900"></option>
+													<option value="#ffff00"></option>
+													<option value="#008a00"></option>
+													<option value="#0066cc"></option>
+													<option value="#9933ff"></option>
+													<option value="#ffffff"></option>
+													<option value="#facccc"></option>
+													<option value="#ffebcc"></option>
+													<option value="#ffffcc"></option>
+													<option value="#cce8cc"></option>
+													<option value="#cce0f5"></option>
+													<option value="#ebd6ff"></option>
+													<option value="#bbbbbb"></option>
+													<option value="#f06666"></option>
+													<option value="#ffc266"></option>
+													<option value="#ffff66"></option>
+													<option value="#66b966"></option>
+													<option value="#66a3e0"></option>
+													<option value="#c285ff"></option>
+													<option value="#888888"></option>
+													<option value="#a10000"></option>
+													<option value="#b26b00"></option>
+													<option value="#b2b200"></option>
+													<option value="#006100"></option>
+													<option value="#0047b2"></option>
+													<option value="#6b24b2"></option>
+													<option value="#444444"></option>
+													<option value="#5c0000"></option>
+													<option value="#663d00"></option>
+													<option value="#666600"></option>
+													<option value="#003700"></option>
+													<option value="#002966"></option>
+													<option value="#3d1466"></option>
+												</select>
+											</span>
+											<span class="ql-formats">
+												<button class="ql-link" value="ordered" ng-attr-title="{{'Add link'}}"></button>
+											</span>
+											<span class="ql-formats">
+												<button class="ql-clean" value="ordered" ng-attr-title="{{'Clear formatting'}}"></button>
+											</span>
+											<div class="pull-right">
+												<a ng-click="$ctrl.makePost()" class="btn btn-sm btn-success">
+													<i class="fa fa-plus"></i>
+													Post
+												</a>
+											</div>
+										</div>
+									</ng-quill-toolbar>
+									<!-- }}} -->
+								</ng-quill-editor>
 							</div>
 						</div>
 					</form>
@@ -78,7 +186,7 @@ angular.module('angular-ui-history',[
 			</div>
 		</div>
 	`,
-	controller: function($http, $scope) {
+	controller: function($http, $sce, $scope) {
 		var $ctrl = this;
 
 		// .posts - History display {{{
@@ -95,7 +203,10 @@ angular.module('angular-ui-history',[
 			$http.get(resolvedUrl)
 				.then(res => {
 					if (!angular.isArray(res.data)) throw new Error(`Expected history feed at URL "${resolvedUrl}" to be an array but got something else`);
-					$ctrl.posts = res.data;
+					$ctrl.posts = res.data.map(post => {
+						if (post.type == 'user.comment') post.body = $sce.trustAsHtml(post.body);
+						return post;
+					});
 				})
 				.catch($ctrl.catcher)
 				.finally(()=> $ctrl.isLoading = false);

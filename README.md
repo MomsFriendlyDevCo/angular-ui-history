@@ -27,6 +27,9 @@ This module also requires several third party dependencies to be exposed:
 <script src="/libs/angular-gravatar/build/angular-gravatar.min.js"></script>
 <script src="/libs/angular-relative-date/dist/angular-relative-date.min.js"></script>
 <script src="/libs/@momsfriendlydevco/angular-bs-tooltip/dist/angular-bs-tooltip.min.js"></script>
+<script src="/libs/quill/dist/quill.min.js"></script>
+<script src="/libs/ng-quill/dist/ng-quill.min.js"></script>
+<link rel="stylesheet" href="/libs/quill/dist/quill.snow.css">
 ```
 
 
