@@ -35,6 +35,11 @@
 				allow-post="true"
 			></ui-history>
 
+			<div ng-if="isGitHub" class="alert alert-warning">
+				<h4>Warning - GitHub posting unsupported</h4>
+				GitHub pages does not support dynamic content so posting via the GitHub demo will not actually make the post appear in the history list
+			</div>
+
 		</div>
 	</body>
 </html>
