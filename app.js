@@ -3,4 +3,5 @@ var app = angular.module("app", [
 ]);
 
 app.controller("historyExampleCtrl", function($scope) {
+	$scope.isGitHub = /\.github.io$/.test(document.location.hostname);
 });

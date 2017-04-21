@@ -30,10 +30,15 @@
 			<h2>Angular-UI-History - Simple example</h2>
 
 			<ui-history
-				query-url="'/history.json'"
-				post-url="'/history.json'"
+				query-url="'history.json'"
+				post-url="'history.json'"
 				allow-post="true"
 			></ui-history>
+
+			<div ng-if="isGitHub" class="alert alert-warning">
+				<h4>Warning - GitHub posting unsupported</h4>
+				GitHub pages does not support dynamic content so posting via the GitHub demo will not actually make the post appear in the history list
+			</div>
 
 		</div>
 	</body>

@@ -37,6 +37,7 @@ angular.module('angular-ui-history', ['angular-bs-tooltip', 'relativeDate', 'ui.
 
 		$ctrl.makePost = function () {
 			if (!$ctrl.allowPost) throw new Error('Posting not allowed');
+			if (!$ctrl.newPost.body) return; // Silently forget if the user is trying to publish empty contents
 
 			var resolvedUrl = angular.isString($ctrl.postUrl) ? $ctrl.postUrl : $ctrl.postUrl($ctrl);
 			if (!resolvedUrl) throw new Error('Resovled POST URL is empty');
