@@ -13,15 +13,15 @@
 	z-index: 100;
 }
 
-/* type=comment {{{ */
-.ui-history .ui-history-comment {
+/* type=user.comment {{{ */
+.ui-history .ui-history-user-comment {
 	position: relative;
 	min-height: 60px;
 	padding-left: 60px;
 	margin: 19px 0;
 }
 
-.ui-history .ui-history-comment > .ui-history-comment-user {
+.ui-history .ui-history-user-comment > .ui-history-user-comment-user {
 	width: 50px;
 	height: 50px;
 	border-radius: 3px;
@@ -29,19 +29,19 @@
 	margin-left: -60px;
 }
 
-.ui-history .ui-history-comment > .ui-history-comment-main {
+.ui-history .ui-history-user-comment > .ui-history-user-comment-main {
 	position: relative;
 	border: 1px solid #CFD8DC;
 	border-radius: 0;
 }
 
-.ui-history .ui-history-comment > .ui-history-comment-main > .ui-history-comment-header {
+.ui-history .ui-history-user-comment > .ui-history-user-comment-main > .ui-history-user-comment-header {
 	margin: 12px 15px;
 	color: #666;
 	border-radius: 3px;
 }
 
-.ui-history .ui-history-comment > .ui-history-comment-main > .ui-history-comment-body {
+.ui-history .ui-history-user-comment > .ui-history-user-comment-main > .ui-history-user-comment-body {
 	position: relative;
 	margin: 12px 15px;
 	overflow: hidden;
@@ -49,8 +49,8 @@
 }
 
 /* Speach arrows {{{ */
-.ui-history .ui-history-comment > .ui-history-comment-main::before,
-.ui-history .ui-history-comment > .ui-history-comment-main::after {
+.ui-history .ui-history-user-comment > .ui-history-user-comment-main::before,
+.ui-history .ui-history-user-comment > .ui-history-user-comment-main::after {
 	content: "";
 	position: absolute;
 	top: 11px;
@@ -63,12 +63,12 @@
 	border-style: solid solid outset;
 }
 
-.ui-history .ui-history-comment > .ui-history-comment-main::before {
+.ui-history .ui-history-user-comment > .ui-history-user-comment-main::before {
 	border-width: 8px;
 	border-right-color: #CFD8DC;
 }
 
-.ui-history .ui-history-comment > .ui-history-comment-main::after {
+.ui-history .ui-history-user-comment > .ui-history-user-comment-main::after {
 	margin-top: 1px;
 	margin-left: 2px;
 	border-width: 7px;
@@ -76,14 +76,36 @@
 }
 /* }}} */
 /* }}} */
-/* type=change {{{ */
-.ui-history .ui-history-change {
-	margin-left: 60;
+/* type=user.change {{{ */
+.ui-history .ui-history-user-change {
+	position: relative;
+	min-height: 60px;
+	padding-left: 60px;
+	margin: 19px 0;
+}
+
+.ui-history .ui-history-user-change > .ui-history-user-change-user {
+	width: 50px;
+	height: 50px;
+	border-radius: 3px;
+	float: left;
+	margin-left: -60px;
+}
+
+.ui-history .ui-history-user-change > .ui-history-user-change-main {
+	position: relative;
+	border-radius: 0;
+	padding-top: 15px;
+}
+/* }}} */
+/* type=system.change {{{ */
+.ui-history .ui-history-system-change {
+	margin-left: 60px;
 }
 /* }}} */
 /* type=unknown {{{ */
 .ui-history .ui-history-unknown {
-	margin-left: 60;
+	margin-left: 60px;
 	margin-bottom: 20px;
 	padding: 15px;
 	color: #a94442;

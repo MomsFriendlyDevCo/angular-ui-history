@@ -17,31 +17,32 @@ angular.module('angular-ui-history',[
 					{{post.date | relativeDate}}
 				</div>
 
-				<div ng-switch-when="user.change" class="ui-history-comment">
-					<div class="ui-history-comment-user">
-						<img gravatar-src="post.user.email" gravatar-size="50" gravatar-default="monsterid" tooltip="{{post.user.name}}"/>
+				<div ng-switch-when="user.change" class="ui-history-user-change">
+					<div class="ui-history-user-change-user">
+						<a ng-href="{{post.user.url}}">
+							<img gravatar-src="post.user.email" gravatar-size="50" gravatar-default="monsterid" tooltip="{{post.user.name}}"/>
+						</a>
 					</div>
-					<div class="ui-history-comment-main">
-						<div class="ui-history-comment-header">HEADER</div>
-						<div class="ui-history-comment-body">
-							Changed
-							{{post.field}}
-							<em>{{post.from}}</em>
-							<i class="fa fa-long-arrow-right"></i>
-							<em>{{post.to}}</em>
-						</div>
-					</div>
-				</div>
-				<div ng-switch-when="user.comment" class="ui-history-comment">
-					<div class="ui-history-comment-user">
-						<img gravatar-src="post.user.email" gravatar-size="50" gravatar-default="monsterid" tooltip="{{post.user.name}}"/>
-					</div>
-					<div class="ui-history-comment-main">
-						<div ng-if="post.title" class="ui-history-comment-header">{{post.title}}</div>
-						<div class="ui-history-comment-body">{{post.body}}</div>
+					<div class="ui-history-user-change-main">
+						Changed
+						{{post.field}}
+						<em>{{post.from}}</em>
+						<i class="fa fa-long-arrow-right"></i>
+						<em>{{post.to}}</em>
 					</div>
 				</div>
-				<div ng-switch-when="system.change" class="ui-history-change">
+				<div ng-switch-when="user.comment" class="ui-history-user-comment">
+					<div class="ui-history-user-comment-user">
+						<a ng-href="{{post.user.url}}">
+							<img gravatar-src="post.user.email" gravatar-size="50" gravatar-default="monsterid" tooltip="{{post.user.name}}"/>
+						</a>
+					</div>
+					<div class="ui-history-user-comment-main">
+						<div ng-if="post.title" class="ui-history-user-comment-header">{{post.title}}</div>
+						<div class="ui-history-user-comment-body">{{post.body}}</div>
+					</div>
+				</div>
+				<div ng-switch-when="system.change" class="ui-history-system-change">
 					Changed
 					{{post.field}}
 					<em>{{post.from}}</em>

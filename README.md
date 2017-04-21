@@ -86,6 +86,7 @@ Used to comment that a user has made.
 |--------------|----------|-----------------------------------------------|
 | `user.email` | `string` | The email address of the user                 |
 | `user.name`  | `string` | The human-friendly name of the user           |
+| `user.url`   | `string` | Link for the user avatar                      |
 | `body`       | `string` | The HTML contents of the item to render       |
 | `title`      | `string` | Optional title header to display for the item |
 
