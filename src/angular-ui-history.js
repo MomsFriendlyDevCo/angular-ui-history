@@ -3,6 +3,9 @@ angular.module('angular-ui-history',[
 ])
 .component('uiHistory', {
 	bindings: {
+		allowPost: '<',
+		queryUrl: '<',
+		catcher: '<',
 	},
 	template: `
 		<div class="ui-history">
@@ -46,18 +49,44 @@ angular.module('angular-ui-history',[
 					Unknown history type: [{{post.type}}]
 				</div>
 			</div>
+			<div ng-if="$ctrl.allowPost">
+				<textarea ng-model="$ctrl.newPost.body"></textarea>
+			</div>
 		</div>
 	`,
-	controller: function($scope){
+	controller: function($http, $scope) {
 		var $ctrl = this;
 
-		$ctrl.posts = [
-			{_id: 1, type: 'user.comment', date: 'Monday 19th April', user: {name: 'Mr Foo.', email: 'foo@test.com'}, body: 'Foo!'},
-			{_id: 2, type: 'user.comment', date: 'last Saturday', user: {name: 'Mr Bar.', email: 'bar@test.com'}, body: 'Bar!'},
-			{_id: 3, type: 'system.change', date: 'last Tuesday', field: 'status', from: 'Draft', to: 'Active'},
-			{_id: 4, type: 'user.comment', date: 'last Wednesday', user: {name: 'Mr Baz.', email: 'baz@test.com'}, body: 'Baz!'},
-			{_id: 5, type: 'user.change', date: '2:03pm', user: {name: 'Mr Baz.', email: 'baz@test.com'}, field: 'status', from: 'Active', to: 'Draft'},
-			{_id: 6, type: 'user.comment', date: '5 minutes ago', user: {name: 'Mr Foo.', email: 'foo@test.com'}, body: 'Foo!'},
-		];
+		// .posts - History display {{{
+		$ctrl.posts;
+		$ctrl.isLoading = false;
+		$ctrl.refresh = ()=> {
+			if (!$ctrl.queryUrl) throw new Error('queryUrl is undefined');
+
+			$ctrl.isLoading = true;
+
+			var resolvedUrl = angular.isString($ctrl.queryUrl) ? $ctrl.queryUrl : $ctrl.queryUrl($ctrl);
+			if (!resolvedUrl) throw new Error('Resovled URL is empty');
+
+			$http.get(resolvedUrl)
+				.then(res => {
+					if (!angular.isArray(res.data)) throw new Error(`Expected history feed at URL "${resolvedUrl}" to be an array but got something else`);
+					$ctrl.posts = res.data;
+				})
+				.catch($ctrl.catcher)
+				.finally(()=> $ctrl.isLoading = false);
+		};
+		// }}}
+
+		// .newPost - New post contents {{{
+		$ctrl.newPost = {body: ''};
+
+		$ctrl.makePost = ()=> {
+		};
+		// }}}
+
+		// Init {{{
+		$ctrl.$onInit = ()=> $ctrl.refresh();
+		// }}}
 	},
 });

@@ -37,3 +37,16 @@ FIXME: <ui-history></ui-history>
 
 
 A demo is also available. To use this [follow the instructions in the demo directory](./demo/README.md).
+
+
+API
+===
+
+Directive Settings
+------------------
+
+| Setting     | Type                   | Default     | Description                                                                                                     |
+|-------------|------------------------|-------------|-----------------------------------------------------------------------------------------------------------------|
+| `allowPost` | `boolean`              | `false`     | Whether to allow posting of new comments                                                                        |
+| `queryUrl`  | `string` or `function` | `undefined` | Where to fetch the existing history from. If this is a function it is expected to provide the GET string to use |
+| `catcher`   | `function`             | `undefined` | How to catch error messages from any of the interfaces                                                          |

@@ -27,6 +27,10 @@ app.get('/app.js', function(req, res) {
 	res.sendFile('app.js', {root: root + '/demo'});
 });
 
+app.get('/history.json', function(req, res) {
+	res.sendFile('history.json', {root: root + '/demo'});
+});
+
 app.get('/dist/angular-ui-history.js', function(req, res) {
 	res.sendFile('angular-ui-history.js', {root: root + '/dist'});
 });
