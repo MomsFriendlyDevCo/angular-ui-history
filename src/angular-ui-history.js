@@ -1,4 +1,6 @@
 angular.module('angular-ui-history',[
+	'angular-bs-tooltip',
+	'relativeDate',
 	'ui.gravatar',
 ])
 .component('uiHistory', {
@@ -11,8 +13,8 @@ angular.module('angular-ui-history',[
 	template: `
 		<div class="ui-history">
 			<div ng-repeat="post in $ctrl.posts track by post._id" ng-switch="post.type" class="ui-history-item">
-				<div class="ui-history-timestamp">
-					{{post.date}}
+				<div class="ui-history-timestamp" tooltip="{{post.date | date:'medium'}}">
+					{{post.date | relativeDate}}
 				</div>
 
 				<div ng-switch-when="user.change" class="ui-history-comment">

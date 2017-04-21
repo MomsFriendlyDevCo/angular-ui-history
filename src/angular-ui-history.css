@@ -1,11 +1,16 @@
 .ui-history {
 }
 
+.ui-history .ui-history-item {
+	position: relative;
+}
 
-.ui-history .ui-history-timestamp {
-	float: right;
+.ui-history .ui-history-item .ui-history-timestamp {
+	position: absolute;
+	top: 5px;
+	right: 8px;
 	color: #BBB;
-	margin: 5px 8px 0 0;
+	z-index: 100;
 }
 
 /* type=comment {{{ */

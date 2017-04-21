@@ -34,8 +34,11 @@
     "rimraf": "^2.6.1"
   },
   "dependencies": {
+    "@momsfriendlydevco/angular-bs-tooltip": "^1.2.3",
     "angular": "^1.6.4",
     "angular-gravatar": "^0.4.2",
-    "bootstrap": "^3.3.7"
+    "angular-relative-date": "^2.1.0",
+    "bootstrap": "^3.3.7",
+    "jquery": "^3.2.1"
   }
 }

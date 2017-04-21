@@ -21,6 +21,14 @@ npm install --save @momsfriendlydevco/angular-ui-history
 <link href="/libs/angular-ui-history/dist/angular-ui-history.min.css" rel="stylesheet" type="text/css"/>
 ```
 
+This module also requires several third party dependencies to be exposed:
+
+```html
+<script src="/libs/angular-gravatar/build/angular-gravatar.min.js"></script>
+<script src="/libs/angular-relative-date/dist/angular-relative-date.min.js"></script>
+<script src="/libs/@momsfriendlydevco/angular-bs-tooltip/dist/angular-bs-tooltip.min.js"></script>
+```
+
 
 3. Include the router in your main `angular.module()` call:
 
