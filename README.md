@@ -50,6 +50,58 @@ A demo is also available. To use this [follow the instructions in the demo direc
 API
 ===
 
+History Items
+-------------
+Each item within the history collection is an object with the following combinations:
+
+### All types
+
+These properties are common for all history item types.
+
+| Property     | Type                 | Description                                                                                                       |
+|--------------|----------------------|-------------------------------------------------------------------------------------------------------------------|
+| `type`       | `string`             | The type of the history item                                                                                      |
+| `date`       | `string` or `Date`   | The JavaScript Date object or a string that can be parsed into one representing when the history item was created |
+
+
+### type=user.change
+
+Used to display that a user has changed a field from one value to another.
+See also `system.change` if the change is internal.
+
+| Property     | Type     | Description                         |
+|--------------|----------|-------------------------------------|
+| `user.email` | `string` | The email address of the user       |
+| `user.name`  | `string` | The human-friendly name of the user |
+| `field`      | `string` | The name of the field that changed  |
+| `from`       | `string` | The previous value                  |
+| `to`         | `string` | The new value                       |
+
+
+### type=user.comment
+
+Used to comment that a user has made.
+
+| Property     | Type     | Description                                   |
+|--------------|----------|-----------------------------------------------|
+| `user.email` | `string` | The email address of the user                 |
+| `user.name`  | `string` | The human-friendly name of the user           |
+| `body`       | `string` | The HTML contents of the item to render       |
+| `title`      | `string` | Optional title header to display for the item |
+
+
+### type=system.change
+
+Used to display that the system has changed a field from one value to another.
+See also `user.change` if the change was performed by a user.
+
+| Property     | Type     | Description                         |
+|--------------|----------|-------------------------------------|
+| `field`      | `string` | The name of the field that changed  |
+| `from`       | `string` | The previous value                  |
+| `to`         | `string` | The new value                       |
+
+
 Directive Settings
 ------------------
 
