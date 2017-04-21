@@ -2,15 +2,20 @@
 	<head>
 		<title>Angular-UI-History</title>
 
-		<!-- Bootstrap -->
-		<link href="node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
-
 		<!-- Font-awesome -->
 		<link href="node_modules/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+		<!-- jQuery -->
+		<script src="node_modules/jquery/dist/jquery.min.js"></script>
+
+		<!-- Bootstrap -->
+		<link href="node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+		<script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
 
 		<!-- Angular -->
 		<script src="node_modules/angular/angular.min.js"></script>
 		<script src="node_modules/angular-gravatar/build/angular-gravatar.min.js"></script>
+		<script src="node_modules/angular-relative-date/dist/angular-relative-date.min.js"></script>
+		<script src="node_modules/@momsfriendlydevco/angular-bs-tooltip/dist/angular-bs-tooltip.min.js"></script>
 
 		<!-- Angular-UI-History -->
 		<script src="dist/angular-ui-history.js"></script>
@@ -24,7 +29,11 @@
 
 			<h2>Angular-UI-History - Simple example</h2>
 
-			<ui-history></ui-history>
+			<ui-history
+				query-url="'/history.json'"
+				post-url="'/history.json'"
+				allow-post="true"
+			></ui-history>
 
 		</div>
 	</body>
