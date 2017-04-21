@@ -37,7 +37,7 @@ angular.module('angular-ui-history',[
 						<img gravatar-src="post.user.email" gravatar-size="50" gravatar-default="monsterid" tooltip="{{post.user.name}}"/>
 					</div>
 					<div class="ui-history-comment-main">
-						<div class="ui-history-comment-header">HEADER</div>
+						<div ng-if="post.title" class="ui-history-comment-header">{{post.title}}</div>
 						<div class="ui-history-comment-body">{{post.body}}</div>
 					</div>
 				</div>
