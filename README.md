@@ -94,6 +94,15 @@ Used to comment that a user has made.
 | `title`      | `string` | Optional title header to display for the item |
 
 
+### type=user.status
+
+Used to pin a generic one-line comment next to a user.
+
+| Property     | Type     | Description                                   |
+|--------------|----------|-----------------------------------------------|
+| `title`      | `string` | Title header to display for the item          |
+
+
 ### type=system.change
 
 Used to display that the system has changed a field from one value to another.
@@ -104,6 +113,15 @@ See also `user.change` if the change was performed by a user.
 | `field`      | `string` | The name of the field that changed  |
 | `from`       | `string` | The previous value                  |
 | `to`         | `string` | The new value                       |
+
+
+### type=system.status
+
+Used to pin a generic one-line comment.
+
+| Property     | Type     | Description                                   |
+|--------------|----------|-----------------------------------------------|
+| `title`      | `string` | Title header to display for the item          |
 
 
 Directive Settings

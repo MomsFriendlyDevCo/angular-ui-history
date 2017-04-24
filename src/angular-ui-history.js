@@ -43,6 +43,14 @@ angular.module('angular-ui-history',[
 						<div class="ui-history-user-comment-body" ng-bind-html="post.body"></div>
 					</div>
 				</div>
+				<div ng-switch-when="user.status" class="ui-history-user-status">
+					<div class="ui-history-user-status-user">
+						<a ng-href="{{post.user.url}}">
+							<img gravatar-src="post.user.email" gravatar-size="50" gravatar-default="monsterid" tooltip="{{post.user.name}}"/>
+						</a>
+					</div>
+					<div class="ui-history-user-status-main" ng-bind-html="post.body"></div>
+				</div>
 				<div ng-switch-when="system.change" class="ui-history-system-change">
 					Changed
 					{{post.field}}
@@ -50,6 +58,7 @@ angular.module('angular-ui-history',[
 					<i class="fa fa-long-arrow-right"></i>
 					<em>{{post.to}}</em>
 				</div>
+				<div ng-switch-when="system.status" class="ui-history-system-status" ng-bind-html="post.body"></div>
 				<div ng-switch-default class="ui-history-unknown">
 					Unknown history type: [{{post.type}}]
 				</div>
@@ -204,7 +213,7 @@ angular.module('angular-ui-history',[
 				.then(res => {
 					if (!angular.isArray(res.data)) throw new Error(`Expected history feed at URL "${resolvedUrl}" to be an array but got something else`);
 					$ctrl.posts = res.data.map(post => {
-						if (post.type == 'user.comment') post.body = $sce.trustAsHtml(post.body);
+						if (post.type == 'user.comment' || post.type == 'user.status' || post.type == 'system.status') post.body = $sce.trustAsHtml(post.body);
 						return post;
 					});
 				})

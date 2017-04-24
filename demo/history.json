@@ -4,5 +4,7 @@
 	{"_id": 2, "type": "system.change", "date": "2017-04-16T02:29:34.231Z", "field": "status", "from": "Draft", "to": "Active"},
 	{"_id": 3, "type": "user.comment", "date": "2017-04-18T04:16:21.123Z", "user": {"name": "Mr Baz.", "email": "baz@test.com", "url": "http://mfdc.biz"}, "body": "Yet another post. This time the user avatar is a link."},
 	{"_id": 4, "type": "user.change", "date": "2017-04-20T03:46:12.215Z", "user": {"name": "Mr Baz.", "email": "baz@test.com"}, "field": "status", "from": "Active", "to": "Draft"},
-	{"_id": 5, "type": "user.comment", "date": "2017-04-21T01:36:57.163Z", "user": {"name": "Mr Foo.", "email": "foo@test.com"}, "body": "<strong>Bold</strong>, <em>Italics!</em>, <u>Underline!</u>"}
+	{"_id": 5, "type": "user.status", "date": "2017-04-21T01:36:57.121Z", "user": {"name": "Mr Foo.", "email": "foo@test.com"}, "body": "is feeling <strong>Happy</strong>"},
+	{"_id": 6, "type": "user.comment", "date": "2017-04-21T01:36:57.163Z", "user": {"name": "Mr Foo.", "email": "foo@test.com"}, "body": "<strong>Bold</strong>, <em>Italics!</em>, <u>Underline!</u>"},
+	{"_id": 7, "type": "system.status", "date": "2017-04-24T16:40:23.271Z", "body": "item has been archived"}
 ]
