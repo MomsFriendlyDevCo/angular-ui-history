@@ -106,8 +106,35 @@
 	padding-top: 15px;
 }
 /* }}} */
+/* type=user.status {{{ */
+.ui-history .ui-history-user-status {
+	position: relative;
+	min-height: 60px;
+	padding-left: 60px;
+	margin: 19px 0;
+}
+
+.ui-history .ui-history-user-status > .ui-history-user-status-user {
+	width: 50px;
+	height: 50px;
+	border-radius: 3px;
+	float: left;
+	margin-left: -60px;
+}
+
+.ui-history .ui-history-user-status > .ui-history-user-status-main {
+	position: relative;
+	border-radius: 0;
+	padding-top: 15px;
+}
+/* }}} */
 /* type=system.change {{{ */
 .ui-history .ui-history-system-change {
+	margin-left: 60px;
+}
+/* }}} */
+/* type=system.status {{{ */
+.ui-history .ui-history-system-status {
 	margin-left: 60px;
 }
 /* }}} */
