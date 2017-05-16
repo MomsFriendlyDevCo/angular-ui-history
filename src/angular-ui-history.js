@@ -24,12 +24,21 @@ angular.module('angular-ui-history',[
 							<img gravatar-src="post.user.email" gravatar-size="50" gravatar-default="monsterid" tooltip="{{post.user.name}}"/>
 						</a>
 					</div>
-					<div class="ui-history-user-change-main">
+					<div ng-if="post.field" class="ui-history-user-change-main">
 						Changed
 						{{post.field}}
 						<em>{{post.from}}</em>
 						<i class="fa fa-long-arrow-right"></i>
 						<em>{{post.to}}</em>
+					</div>
+					<div ng-if="post.fields" class="ui-history-user-change-main">
+						Changes:
+						<div ng-repeat="(field, change) in post.fields track by field">
+							{{field}}
+							<em>{{change.from}}</em>
+							<i class="fa fa-long-arrow-right"></i>
+							<em>{{change.to}}</em>
+						</div>
 					</div>
 				</div>
 				<div ng-switch-when="user.comment" class="ui-history-user-comment">
@@ -52,11 +61,22 @@ angular.module('angular-ui-history',[
 					<div class="ui-history-user-status-main" ng-bind-html="post.body"></div>
 				</div>
 				<div ng-switch-when="system.change" class="ui-history-system-change">
-					Changed
-					{{post.field}}
-					<em>{{post.from}}</em>
-					<i class="fa fa-long-arrow-right"></i>
-					<em>{{post.to}}</em>
+					<div ng-if="post.field">
+						Changed
+						{{post.field}}
+						<em>{{post.from}}</em>
+						<i class="fa fa-long-arrow-right"></i>
+						<em>{{post.to}}</em>
+					</div>
+					<div ng-if="post.fields">
+						Changes:
+						<div ng-repeat="(field, change) in post.fields track by field">
+							{{field}}
+							<em>{{change.from}}</em>
+							<i class="fa fa-long-arrow-right"></i>
+							<em>{{change.to}}</em>
+						</div>
+					</div>
 				</div>
 				<div ng-switch-when="system.status" class="ui-history-system-status" ng-bind-html="post.body"></div>
 				<div ng-switch-default class="ui-history-unknown">

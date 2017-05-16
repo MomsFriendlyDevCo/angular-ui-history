@@ -79,6 +79,7 @@ See also `system.change` if the change is internal.
 | `field`      | `string` | The name of the field that changed  |
 | `from`       | `string` | The previous value                  |
 | `to`         | `string` | The new value                       |
+| `fields`     | `object` | Object with multiple changes (each entry should have a `from` + `to` key + value |
 
 
 ### type=user.comment
@@ -113,6 +114,7 @@ See also `user.change` if the change was performed by a user.
 | `field`      | `string` | The name of the field that changed  |
 | `from`       | `string` | The previous value                  |
 | `to`         | `string` | The new value                       |
+| `fields`     | `object` | Object with multiple changes (each entry should have a `from` + `to` key + value |
 
 
 ### type=system.status
