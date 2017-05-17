@@ -21,6 +21,15 @@
 	color: #fff;
 }
 
+.ui-history .form-group > .col-sm-12 {
+	margin-bottom: 50px;
+}
+
+.ui-history .form-group > .col-sm-12,
+.ui-history .ql-container {
+	height: 250px;
+}
+
 /* type=user.comment {{{ */
 .ui-history .ui-history-user-comment {
 	position: relative;

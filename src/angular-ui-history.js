@@ -91,7 +91,7 @@ angular.module('angular-ui-history',[
 				<div ng-show="!$ctrl.isPosting">
 					<form ng-submit="$ctrl.makePost()" class="form-horizontal">
 						<div class="form-group">
-							<div class="col-sm-12" style="height: 250px; margin-bottom: 50px">
+							<div class="col-sm-12">
 								<ng-quill-editor ng-model="$ctrl.newPost.body" placeholder="Leave a comment...">
 									<!-- ng-quill toolbar config {{{ -->
 									<ng-quill-toolbar>
