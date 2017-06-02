@@ -295,7 +295,13 @@ angular.module('angular-ui-history',[
 			if (!$ctrl.allowPost) throw new Error('Posting not allowed');
 			if (!$ctrl.newPost.body) return; // Silently forget if the user is trying to publish empty contents
 
-			var resolvedUrl = angular.isString($ctrl.postUrl) ? $ctrl.postUrl : $ctrl.postUrl($ctrl);
+			var resolvedUrl =
+				angular.isString($ctrl.postUrl) ? $ctrl.postUrl :
+				angular.isFunction($ctrl.postUrl) ? $ctrl.postUrl($ctrl) :
+				angular.isString($ctrl.queryUrl) ? $ctrl.queryUrl :
+				angular.isFunction($ctrl.queryUrl) ? $ctrl.queryUrl($ctrl) :
+				undefined;
+
 			if (!resolvedUrl) throw new Error('Resovled POST URL is empty');
 
 			$ctrl.isPosting = true;
@@ -315,7 +321,12 @@ angular.module('angular-ui-history',[
 		$element
 			.find('input[type=file]')
 			.on('change', function() { $timeout(()=> { // Attach to file widget and listen for change events so we can update the text
-				var resolvedUrl = angular.isString($ctrl.postUrl) ? $ctrl.postUrl : $ctrl.postUrl($ctrl);
+				var resolvedUrl =
+					angular.isString($ctrl.postUrl) ? $ctrl.postUrl :
+					angular.isFunction($ctrl.postUrl) ? $ctrl.postUrl($ctrl) :
+					angular.isString($ctrl.queryUrl) ? $ctrl.queryUrl :
+					angular.isFunction($ctrl.queryUrl) ? $ctrl.queryUrl($ctrl) :
+					undefined;
 				if (!resolvedUrl) throw new Error('Resovled POST URL is empty');
 
 				var formData = new FormData();
