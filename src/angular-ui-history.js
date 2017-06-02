@@ -161,77 +161,11 @@ angular.module('angular-ui-history',[
 											<span class="ql-formats">
 												<select class="ql-color" ng-attr-title="{{'Text color'}}">
 													<option selected="selected"></option>
-													<option value="#e60000"></option>
-													<option value="#ff9900"></option>
-													<option value="#ffff00"></option>
-													<option value="#008a00"></option>
-													<option value="#0066cc"></option>
-													<option value="#9933ff"></option>
-													<option value="#ffffff"></option>
-													<option value="#facccc"></option>
-													<option value="#ffebcc"></option>
-													<option value="#ffffcc"></option>
-													<option value="#cce8cc"></option>
-													<option value="#cce0f5"></option>
-													<option value="#ebd6ff"></option>
-													<option value="#bbbbbb"></option>
-													<option value="#f06666"></option>
-													<option value="#ffc266"></option>
-													<option value="#ffff66"></option>
-													<option value="#66b966"></option>
-													<option value="#66a3e0"></option>
-													<option value="#c285ff"></option>
-													<option value="#888888"></option>
-													<option value="#a10000"></option>
-													<option value="#b26b00"></option>
-													<option value="#b2b200"></option>
-													<option value="#006100"></option>
-													<option value="#0047b2"></option>
-													<option value="#6b24b2"></option>
-													<option value="#444444"></option>
-													<option value="#5c0000"></option>
-													<option value="#663d00"></option>
-													<option value="#666600"></option>
-													<option value="#003700"></option>
-													<option value="#002966"></option>
-													<option value="#3d1466"></option>
+													<option ng-repeat="color in ::$ctrl.colors" value="{{::color}}"></option>
 												</select>
 												<select class="ql-background" ng-attr-title="{{'Background color'}}">
 													<option selected="selected"></option>
-													<option value="#e60000"></option>
-													<option value="#ff9900"></option>
-													<option value="#ffff00"></option>
-													<option value="#008a00"></option>
-													<option value="#0066cc"></option>
-													<option value="#9933ff"></option>
-													<option value="#ffffff"></option>
-													<option value="#facccc"></option>
-													<option value="#ffebcc"></option>
-													<option value="#ffffcc"></option>
-													<option value="#cce8cc"></option>
-													<option value="#cce0f5"></option>
-													<option value="#ebd6ff"></option>
-													<option value="#bbbbbb"></option>
-													<option value="#f06666"></option>
-													<option value="#ffc266"></option>
-													<option value="#ffff66"></option>
-													<option value="#66b966"></option>
-													<option value="#66a3e0"></option>
-													<option value="#c285ff"></option>
-													<option value="#888888"></option>
-													<option value="#a10000"></option>
-													<option value="#b26b00"></option>
-													<option value="#b2b200"></option>
-													<option value="#006100"></option>
-													<option value="#0047b2"></option>
-													<option value="#6b24b2"></option>
-													<option value="#444444"></option>
-													<option value="#5c0000"></option>
-													<option value="#663d00"></option>
-													<option value="#666600"></option>
-													<option value="#003700"></option>
-													<option value="#002966"></option>
-													<option value="#3d1466"></option>
+													<option ng-repeat="color in ::$ctrl.colors" value="{{::color}}"></option>
 												</select>
 											</span>
 											<span class="ql-formats">
@@ -263,6 +197,10 @@ angular.module('angular-ui-history',[
 	`,
 	controller: function($element, $http, $sce, $scope, $timeout) {
 		var $ctrl = this;
+
+		// Quill setup {{{
+		$ctrl.colors = ['#e60000', '#ff9900', '#ffff00', '#008a00', '#0066cc', '#9933ff', '#ffffff', '#facccc', '#ffebcc', '#ffffcc', '#cce8cc', '#cce0f5', '#ebd6ff', '#bbbbbb', '#f06666', '#ffc266', '#ffff66', '#66b966', '#66a3e0', '#c285ff', '#888888', '#a10000', '#b26b00', '#b2b200', '#006100', '#0047b2', '#6b24b2', '#444444', '#5c0000', '#663d00', '#666600', '#003700', '#002966', '#3d1466'],
+		// }}}
 
 		// .posts - History display {{{
 		$ctrl.posts;
