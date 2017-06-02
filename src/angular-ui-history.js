@@ -7,17 +7,23 @@ angular.module('angular-ui-history',[
 .component('uiHistory', {
 	bindings: {
 		allowPost: '<',
+		allowUpload: '<',
 		queryUrl: '<',
 		postUrl: '<',
 		catcher: '<',
+		onUpload: '&?',
 	},
 	template: `
 		<div class="ui-history">
+			<div style="display: none">
+				<input id="angular-ui-history-upload-helper" name="file" multiple type="file"/>
+			</div>
 			<div ng-repeat="post in $ctrl.posts track by post._id" ng-switch="post.type" class="ui-history-item">
 				<div class="ui-history-timestamp" tooltip="{{post.date | date:'medium'}}">
 					{{post.date | relativeDate}}
 				</div>
 
+				<!-- type=user.change {{{ -->
 				<div ng-switch-when="user.change" class="ui-history-user-change">
 					<div class="ui-history-user-change-user">
 						<a ng-href="{{post.user.url}}">
@@ -41,6 +47,8 @@ angular.module('angular-ui-history',[
 						</div>
 					</div>
 				</div>
+				<!-- }}} -->
+				<!-- type=user.comment {{{ -->
 				<div ng-switch-when="user.comment" class="ui-history-user-comment">
 					<div class="ui-history-user-comment-user">
 						<a ng-href="{{post.user.url}}">
@@ -52,6 +60,32 @@ angular.module('angular-ui-history',[
 						<div class="ui-history-user-comment-body" ng-bind-html="post.body"></div>
 					</div>
 				</div>
+				<!-- }}} -->
+				<!-- type=user.upload {{{ -->
+				<div ng-switch-when="user.upload" class="ui-history-user-upload">
+					<div class="ui-history-user-upload-user">
+						<a ng-href="{{post.user.url}}">
+							<img gravatar-src="post.user.email" gravatar-size="50" gravatar-default="monsterid" tooltip="{{post.user.name}}"/>
+						</a>
+					</div>
+					<div class="ui-history-user-upload-main">
+						<div style="margin-bottom: 10px">Attached files:</div>
+						<ul class="list-group">
+							<a ng-if="post.filename" ng-href="{{post.url}}" class="list-group-item">
+								<div ng-if="post.size" class="pull-right">{{post.size}}</div>
+								<i ng-if="post.icon" class="{{post.icon}}"></i>
+								{{post.filename || 'Unknown file'}}
+							</a>
+							<a ng-if="post.files" ng-repeat="file in post.files track by file.filename" ng-href="{{file.url}}" class="list-group-item">
+								<div ng-if="file.size" class="pull-right">{{file.size}}</div>
+								<i ng-if="file.icon" class="{{file.icon}}"></i>
+								{{file.filename || 'Unknown file'}}
+							</a>
+						</ul>
+					</div>
+				</div>
+				<!-- }}} -->
+				<!-- type=user.status {{{ -->
 				<div ng-switch-when="user.status" class="ui-history-user-status">
 					<div class="ui-history-user-status-user">
 						<a ng-href="{{post.user.url}}">
@@ -60,6 +94,8 @@ angular.module('angular-ui-history',[
 					</div>
 					<div class="ui-history-user-status-main" ng-bind-html="post.body"></div>
 				</div>
+				<!-- }}} -->
+				<!-- type=system.change {{{ -->
 				<div ng-switch-when="system.change" class="ui-history-system-change">
 					<div ng-if="post.field">
 						Changed
@@ -78,10 +114,15 @@ angular.module('angular-ui-history',[
 						</div>
 					</div>
 				</div>
+				<!-- }}} -->
+				<!-- type=system.status {{{ -->
 				<div ng-switch-when="system.status" class="ui-history-system-status" ng-bind-html="post.body"></div>
+				<!-- }}} -->
+				<!-- type unknown {{{ -->
 				<div ng-switch-default class="ui-history-unknown">
 					Unknown history type: [{{post.type}}]
 				</div>
+				<!-- }}} -->
 			</div>
 			<div ng-if="$ctrl.allowPost">
 				<hr/>
@@ -199,6 +240,10 @@ angular.module('angular-ui-history',[
 												<button class="ql-clean" value="ordered" ng-attr-title="{{'Clear formatting'}}"></button>
 											</span>
 											<div class="pull-right">
+												<a ng-click="$ctrl.selectFiles()" class="btn btn-sm btn-default">
+													<i class="fa fa-file-o"></i>
+													Upload files...
+												</a>
 												<a ng-click="$ctrl.makePost()" class="btn btn-sm btn-success">
 													<i class="fa fa-plus"></i>
 													Post
@@ -215,7 +260,7 @@ angular.module('angular-ui-history',[
 			</div>
 		</div>
 	`,
-	controller: function($http, $sce, $scope) {
+	controller: function($element, $http, $sce, $scope, $timeout) {
 		var $ctrl = this;
 
 		// .posts - History display {{{
@@ -262,6 +307,38 @@ angular.module('angular-ui-history',[
 
 			$http.get(resolvedUrl)
 		};
+		// }}}
+
+		// Uploads {{{
+		$ctrl.isUploading = false;
+		// Bind to element input[type=file] handlers and listen for changes {{{
+		$element
+			.find('input[type=file]')
+			.on('change', function() { $timeout(()=> { // Attach to file widget and listen for change events so we can update the text
+				var resolvedUrl = angular.isString($ctrl.postUrl) ? $ctrl.postUrl : $ctrl.postUrl($ctrl);
+				if (!resolvedUrl) throw new Error('Resovled POST URL is empty');
+
+				var formData = new FormData();
+				Object.keys(this.files).forEach((k, i) => formData.append('file_' + i, this.files[k]));
+
+				$ctrl.isUploading = true;
+				$http.post(resolvedUrl, formData, {
+					headers: {'Content-Type': undefined}, // Need to override the headers so that angular changes them over into multipart/mime
+					transformRequest: angular.identity,
+				})
+					.then(res => {
+						if ($ctrl.onUpload) $ctrl.onUpload(res);
+					})
+					.catch($ctrl.catcher)
+					.then(()=> $ctrl.refresh())
+					.finally(()=> $ctrl.isUploading = false)
+			})});
+		// }}}
+
+		/**
+		* Trigger the file upload dialog using the upload helper input element
+		*/
+		$ctrl.selectFiles = ()=> $element.find('#angular-ui-history-upload-helper').click();
 		// }}}
 
 		// Init {{{
