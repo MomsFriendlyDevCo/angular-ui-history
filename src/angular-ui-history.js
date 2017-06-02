@@ -26,7 +26,7 @@ angular.module('angular-ui-history',[
 				<!-- type=user.change {{{ -->
 				<div ng-switch-when="user.change" class="ui-history-user-change">
 					<div class="ui-history-user-change-user">
-						<a ng-href="{{post.user.url}}">
+						<a ng-href="{{post.user.url}}" target="_blank">
 							<img gravatar-src="post.user.email" gravatar-size="50" gravatar-default="monsterid" tooltip="{{post.user.name}}"/>
 						</a>
 					</div>
@@ -51,7 +51,7 @@ angular.module('angular-ui-history',[
 				<!-- type=user.comment {{{ -->
 				<div ng-switch-when="user.comment" class="ui-history-user-comment">
 					<div class="ui-history-user-comment-user">
-						<a ng-href="{{post.user.url}}">
+						<a ng-href="{{post.user.url}}" target="_blank">
 							<img gravatar-src="post.user.email" gravatar-size="50" gravatar-default="monsterid" tooltip="{{post.user.name}}"/>
 						</a>
 					</div>
@@ -64,19 +64,19 @@ angular.module('angular-ui-history',[
 				<!-- type=user.upload {{{ -->
 				<div ng-switch-when="user.upload" class="ui-history-user-upload">
 					<div class="ui-history-user-upload-user">
-						<a ng-href="{{post.user.url}}">
+						<a ng-href="{{post.user.url}}" target="_blank">
 							<img gravatar-src="post.user.email" gravatar-size="50" gravatar-default="monsterid" tooltip="{{post.user.name}}"/>
 						</a>
 					</div>
 					<div class="ui-history-user-upload-main">
 						<div style="margin-bottom: 10px">Attached files:</div>
 						<ul class="list-group">
-							<a ng-if="post.filename" ng-href="{{post.url}}" class="list-group-item">
+							<a ng-if="post.filename" ng-href="{{post.url}}" target="_blank" class="list-group-item">
 								<div ng-if="post.size" class="pull-right">{{post.size}}</div>
 								<i ng-if="post.icon" class="{{post.icon}}"></i>
 								{{post.filename || 'Unknown file'}}
 							</a>
-							<a ng-if="post.files" ng-repeat="file in post.files track by file.filename" ng-href="{{file.url}}" class="list-group-item">
+							<a ng-if="post.files" ng-repeat="file in post.files track by file.filename" ng-href="{{file.url}}" target="_blank" class="list-group-item">
 								<div ng-if="file.size" class="pull-right">{{file.size}}</div>
 								<i ng-if="file.icon" class="{{file.icon}}"></i>
 								{{file.filename || 'Unknown file'}}
@@ -88,7 +88,7 @@ angular.module('angular-ui-history',[
 				<!-- type=user.status {{{ -->
 				<div ng-switch-when="user.status" class="ui-history-user-status">
 					<div class="ui-history-user-status-user">
-						<a ng-href="{{post.user.url}}">
+						<a ng-href="{{post.user.url}}" target="_blank">
 							<img gravatar-src="post.user.email" gravatar-size="50" gravatar-default="monsterid" tooltip="{{post.user.name}}"/>
 						</a>
 					</div>
