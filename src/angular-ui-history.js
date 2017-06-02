@@ -10,8 +10,8 @@ angular.module('angular-ui-history',[
 		allowUpload: '<',
 		queryUrl: '<',
 		postUrl: '<',
-		catcher: '<',
 		onUpload: '&?',
+		onError: '&?',
 	},
 	template: `
 		<div class="ui-history">
@@ -282,7 +282,7 @@ angular.module('angular-ui-history',[
 						return post;
 					});
 				})
-				.catch($ctrl.catcher)
+				.catch(error => { if ($ctrl.onError) $ctrl.onError({error}) })
 				.finally(()=> $ctrl.isLoading = false);
 		};
 		// }}}
@@ -308,7 +308,7 @@ angular.module('angular-ui-history',[
 			$http.post(resolvedUrl, $ctrl.newPost)
 				.then(()=> $ctrl.newPost.body = '')
 				.then(()=> $ctrl.refresh())
-				.catch($ctrl.catcher)
+				.catch(error => { if ($ctrl.onError) $ctrl.onError({error}) })
 				.finally(()=> $ctrl.isPosting = false);
 
 			$http.get(resolvedUrl)
@@ -337,10 +337,8 @@ angular.module('angular-ui-history',[
 					headers: {'Content-Type': undefined}, // Need to override the headers so that angular changes them over into multipart/mime
 					transformRequest: angular.identity,
 				})
-					.then(res => {
-						if ($ctrl.onUpload) $ctrl.onUpload(res);
-					})
-					.catch($ctrl.catcher)
+					.then(res => { if ($ctrl.onUpload) $ctrl.onUpload(res) })
+					.catch(error => { if ($ctrl.onError) $ctrl.onError({error}) })
 					.then(()=> $ctrl.refresh())
 					.finally(()=> $ctrl.isUploading = false)
 			})});
