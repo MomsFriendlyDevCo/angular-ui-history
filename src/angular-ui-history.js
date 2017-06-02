@@ -124,6 +124,7 @@ angular.module('angular-ui-history',[
 				</div>
 				<!-- }}} -->
 			</div>
+			<div ng-if="!$ctrl.posts.length" class="text-muted text-center">No history to display</div>
 			<div ng-if="$ctrl.allowPost">
 				<hr/>
 				<div ng-show="$ctrl.isPosting" class="text-center">
