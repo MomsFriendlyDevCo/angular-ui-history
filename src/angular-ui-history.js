@@ -4,10 +4,13 @@ angular.module('angular-ui-history',[
 	'relativeDate',
 	'ui.gravatar',
 ])
+
+// Main widget {{{
 .component('uiHistory', {
 	bindings: {
 		allowPost: '<',
 		allowUpload: '<',
+		display: '<',
 		queryUrl: '<',
 		postUrl: '<',
 		onUpload: '&?',
@@ -18,7 +21,18 @@ angular.module('angular-ui-history',[
 			<div style="display: none">
 				<input id="angular-ui-history-upload-helper" name="file" multiple type="file"/>
 			</div>
-			<div ng-repeat="post in $ctrl.posts track by post._id" ng-switch="post.type" class="ui-history-item">
+			<!-- Header editor (if display='recentFirst') {{{ -->
+			<div ng-if="$ctrl.allowPost && $ctrl.display == 'recentFirst'">
+				<div ng-show="$ctrl.isPosting" class="text-center">
+					<h3><i class="fa fa-spinner fa-spin"></i> Posting...</h3>
+				</div>
+				<div ng-show="!$ctrl.isPosting">
+					<ui-history-editor on-post="$ctrl.makePost(body)" buttons="$ctrl.editorButtons"></ui-history-editor>
+				</div>
+				<hr/>
+			</div>
+			<!-- }}} -->
+			<div ng-repeat="post in $ctrl.posts | orderBy:'date':$ctrl.display=='recentFirst' track by post._id" ng-switch="post.type" class="ui-history-item">
 				<div class="ui-history-timestamp" tooltip="{{post.date | date:'medium'}}">
 					{{post.date | relativeDate}}
 				</div>
@@ -125,81 +139,30 @@ angular.module('angular-ui-history',[
 				<!-- }}} -->
 			</div>
 			<div ng-if="!$ctrl.posts.length" class="text-muted text-center">No history to display</div>
-			<div ng-if="$ctrl.allowPost">
+			<!-- Footer editor (if !display || display='oldestFirst') {{{ -->
+			<div ng-if="$ctrl.allowPost && (!$ctrl.display || $ctrl.display == 'oldestFirst')">
 				<hr/>
 				<div ng-show="$ctrl.isPosting" class="text-center">
 					<h3><i class="fa fa-spinner fa-spin"></i> Posting...</h3>
 				</div>
 				<div ng-show="!$ctrl.isPosting">
-					<form ng-submit="$ctrl.makePost()" class="form-horizontal">
-						<div class="form-group">
-							<div class="col-sm-12">
-								<ng-quill-editor ng-model="$ctrl.newPost.body" placeholder="Leave a comment...">
-									<!-- ng-quill toolbar config {{{ -->
-									<ng-quill-toolbar>
-										<div>
-											<span class="ql-formats">
-												<button class="ql-bold" ng-attr-title="{{'Bold'}}"></button>
-												<button class="ql-italic" ng-attr-title="{{'Italic'}}"></button>
-												<button class="ql-underline" ng-attr-title="{{'Underline'}}"></button>
-												<button class="ql-strike" ng-attr-title="{{'Strikethough'}}"></button>
-											</span>
-											<span class="ql-formats">
-												<button class="ql-blockquote" ng-attr-title="{{'Block Quote'}}"></button>
-												<button class="ql-code-block" ng-attr-title="{{'Code Block'}}"></button>
-											</span>
-											<span class="ql-formats">
-												<button class="ql-header" value="1" ng-attr-title="{{'Header 1'}}"></button>
-												<button class="ql-header" value="2" ng-attr-title="{{'Header 2'}}"></button>
-											</span>
-											<span class="ql-formats">
-												<button class="ql-list" value="ordered" ng-attr-title="{{'Numered list'}}"></button>
-												<button class="ql-list" value="bullet" ng-attr-title="{{'Bulleted list'}}"></button>
-												<button class="ql-indent" value="-1" ng-attr-title="{{'De-indent'}}"></button>
-												<button class="ql-indent" value="+1" ng-attr-title="{{'Indent'}}"></button>
-											</span>
-											<span class="ql-formats">
-												<select class="ql-color" ng-attr-title="{{'Text color'}}">
-													<option selected="selected"></option>
-													<option ng-repeat="color in ::$ctrl.colors" value="{{::color}}"></option>
-												</select>
-												<select class="ql-background" ng-attr-title="{{'Background color'}}">
-													<option selected="selected"></option>
-													<option ng-repeat="color in ::$ctrl.colors" value="{{::color}}"></option>
-												</select>
-											</span>
-											<span class="ql-formats">
-												<button class="ql-link" value="ordered" ng-attr-title="{{'Add link'}}"></button>
-											</span>
-											<span class="ql-formats">
-												<button class="ql-clean" value="ordered" ng-attr-title="{{'Clear formatting'}}"></button>
-											</span>
-											<div class="pull-right">
-												<a ng-click="$ctrl.selectFiles()" class="btn btn-sm btn-default">
-													<i class="fa fa-file-o"></i>
-													Upload files...
-												</a>
-												<a ng-click="$ctrl.makePost()" class="btn btn-sm btn-success">
-													<i class="fa fa-plus"></i>
-													Post
-												</a>
-											</div>
-										</div>
-									</ng-quill-toolbar>
-									<!-- }}} -->
-								</ng-quill-editor>
-							</div>
-						</div>
-					</form>
+					<ui-history-editor on-post="$ctrl.makePost(body)" buttons="$ctrl.editorButtons"></ui-history-editor>
 				</div>
 			</div>
+			<!-- }}} -->
 		</div>
 	`,
 	controller: function($element, $http, $sce, $scope, $timeout) {
 		var $ctrl = this;
 
-		// Quill setup {{{
-		$ctrl.colors = ['#e60000', '#ff9900', '#ffff00', '#008a00', '#0066cc', '#9933ff', '#ffffff', '#facccc', '#ffebcc', '#ffffcc', '#cce8cc', '#cce0f5', '#ebd6ff', '#bbbbbb', '#f06666', '#ffc266', '#ffff66', '#66b966', '#66a3e0', '#c285ff', '#888888', '#a10000', '#b26b00', '#b2b200', '#006100', '#0047b2', '#6b24b2', '#444444', '#5c0000', '#663d00', '#666600', '#003700', '#002966', '#3d1466'],
+		// Editor setup {{{
+		$ctrl.editorButtons = [
+			{
+				title: 'Upload files...',
+				icon: 'fa fa-file-o',
+				onClick: ()=> $ctrl.selectFiles(),
+			},
+		];
 		// }}}
 
 		// .posts - History display {{{
@@ -228,11 +191,10 @@ angular.module('angular-ui-history',[
 
 		// .newPost - New post contents {{{
 		$ctrl.isPosting = false;
-		$ctrl.newPost = {body: ''};
 
-		$ctrl.makePost = ()=> {
+		$ctrl.makePost = body => {
 			if (!$ctrl.allowPost) throw new Error('Posting not allowed');
-			if (!$ctrl.newPost.body) return; // Silently forget if the user is trying to publish empty contents
+			if (!body) return; // Silently forget if the user is trying to publish empty contents
 
 			var resolvedUrl =
 				angular.isString($ctrl.postUrl) ? $ctrl.postUrl :
@@ -244,13 +206,10 @@ angular.module('angular-ui-history',[
 			if (!resolvedUrl) throw new Error('Resovled POST URL is empty');
 
 			$ctrl.isPosting = true;
-			$http.post(resolvedUrl, $ctrl.newPost)
-				.then(()=> $ctrl.newPost.body = '')
+			return $http.post(resolvedUrl, {body})
 				.then(()=> $ctrl.refresh())
 				.catch(error => { if ($ctrl.onError) $ctrl.onError({error}) })
 				.finally(()=> $ctrl.isPosting = false);
-
-			$http.get(resolvedUrl)
 		};
 		// }}}
 
@@ -293,4 +252,95 @@ angular.module('angular-ui-history',[
 		$ctrl.$onInit = ()=> $ctrl.refresh();
 		// }}}
 	},
-});
+})
+// }}}
+
+// Post comment widget {{{
+/**
+* The post area WYSIWYG editor for angular-ui-history
+* @param {function} onPost The function to be called when the user has finished writing text. If this is a promise the input will be cleared if it resolves correctly
+* @param {array} [buttons] A collection of buttons to display in the editor. Each should have at least `title` and `onClick` with optional `icon`, `class`
+*/
+.component('uiHistoryEditor', {
+	bindings: {
+		onPost: '&',
+		buttons: '<',
+	},
+	template: `
+		<form ng-submit="$ctrl.makePost()" class="form-horizontal">
+			<div class="form-group">
+				<div class="col-sm-12">
+					<ng-quill-editor ng-model="$ctrl.newPost.body" placeholder="Leave a comment...">
+						<!-- ng-quill toolbar config {{{ -->
+						<ng-quill-toolbar>
+							<div>
+								<span class="ql-formats">
+									<button class="ql-bold" ng-attr-title="{{'Bold'}}"></button>
+									<button class="ql-italic" ng-attr-title="{{'Italic'}}"></button>
+									<button class="ql-underline" ng-attr-title="{{'Underline'}}"></button>
+									<button class="ql-strike" ng-attr-title="{{'Strikethough'}}"></button>
+								</span>
+								<span class="ql-formats">
+									<button class="ql-blockquote" ng-attr-title="{{'Block Quote'}}"></button>
+									<button class="ql-code-block" ng-attr-title="{{'Code Block'}}"></button>
+								</span>
+								<span class="ql-formats">
+									<button class="ql-header" value="1" ng-attr-title="{{'Header 1'}}"></button>
+									<button class="ql-header" value="2" ng-attr-title="{{'Header 2'}}"></button>
+								</span>
+								<span class="ql-formats">
+									<button class="ql-list" value="ordered" ng-attr-title="{{'Numered list'}}"></button>
+									<button class="ql-list" value="bullet" ng-attr-title="{{'Bulleted list'}}"></button>
+									<button class="ql-indent" value="-1" ng-attr-title="{{'De-indent'}}"></button>
+									<button class="ql-indent" value="+1" ng-attr-title="{{'Indent'}}"></button>
+								</span>
+								<span class="ql-formats">
+									<select class="ql-color" ng-attr-title="{{'Text color'}}">
+										<option selected="selected"></option>
+										<option ng-repeat="color in ::$ctrl.colors" value="{{::color}}"></option>
+									</select>
+									<select class="ql-background" ng-attr-title="{{'Background color'}}">
+										<option selected="selected"></option>
+										<option ng-repeat="color in ::$ctrl.colors" value="{{::color}}"></option>
+									</select>
+								</span>
+								<span class="ql-formats">
+									<button class="ql-link" value="ordered" ng-attr-title="{{'Add link'}}"></button>
+								</span>
+								<span class="ql-formats">
+									<button class="ql-clean" value="ordered" ng-attr-title="{{'Clear formatting'}}"></button>
+								</span>
+								<div class="pull-right">
+									<a ng-repeat="button in $ctrl.buttons" class="btn" ng-class="$ctrl.class || 'btn-default'" ng-click="button.onClick()">
+										<i ng-if="button.icon" class="{{button.icon}}"></i>
+										{{button.title}}
+									</a>
+									<a ng-click="$ctrl.makePost()" class="btn btn-sm btn-success">
+										<i class="fa fa-plus"></i>
+										Post
+									</a>
+								</div>
+							</div>
+						</ng-quill-toolbar>
+						<!-- }}} -->
+					</ng-quill-editor>
+				</div>
+			</div>
+		</form>
+	`,
+	controller: function() {
+		var $ctrl = this;
+
+		// Quill setup {{{
+		$ctrl.colors = ['#e60000', '#ff9900', '#ffff00', '#008a00', '#0066cc', '#9933ff', '#ffffff', '#facccc', '#ffebcc', '#ffffcc', '#cce8cc', '#cce0f5', '#ebd6ff', '#bbbbbb', '#f06666', '#ffc266', '#ffff66', '#66b966', '#66a3e0', '#c285ff', '#888888', '#a10000', '#b26b00', '#b2b200', '#006100', '#0047b2', '#6b24b2', '#444444', '#5c0000', '#663d00', '#666600', '#003700', '#002966', '#3d1466'],
+		// }}}
+
+		$ctrl.newPost = {body: ''};
+		$ctrl.makePost = ()=> {
+			if (!$ctrl.onPost) throw new Error('Post content provided but no onPost binding defined');
+			var ret = $ctrl.onPost({body: $ctrl.newPost.body});
+			if (angular.isFunction(ret.then)) ret.then(()=> $ctrl.newPost = {body: ''});
+		};
+	},
+})
+// }}}
