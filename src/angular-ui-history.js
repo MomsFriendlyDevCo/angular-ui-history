@@ -48,6 +48,9 @@ angular.module('angular-ui-history',[
 									Fetching list of files...
 								</h2>
 							</div>
+							<div ng-if="!$ctrl.isLoadingUploads && $ctrl.uploads.length == 0" class="text-muted text-center">
+								No file uploads found
+							</div>
 							<ul class="list-group">
 								<a ng-repeat="file in $ctrl.uploads track by file.filename" ng-href="{{file.url}}" class="list-group-item">
 									<div class="pull-right">
