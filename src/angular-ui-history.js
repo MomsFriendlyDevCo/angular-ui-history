@@ -326,8 +326,6 @@ angular.module('angular-ui-history',[
 							if (a.filename == b.filename) return 0;
 							return a.filename > b.filename ? 1 : -1;
 						});
-
-					console.log('FILES', $ctrl.uploads);
 				})
 				.catch(error => { if ($ctrl.onError) $ctrl.onError({error}) })
 				.finally(()=> $ctrl.isLoadingUploads = false)
