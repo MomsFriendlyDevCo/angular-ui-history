@@ -52,7 +52,7 @@ angular.module('angular-ui-history',[
 								No file uploads found
 							</div>
 							<ul class="list-group">
-								<a ng-repeat="file in $ctrl.uploads track by file.filename" ng-href="{{file.url}}" class="list-group-item">
+								<a ng-repeat="file in $ctrl.uploads track by file.filename" ng-href="{{file.url}}" target="_blank" class="list-group-item">
 									<div class="pull-right">
 										<span class="badge">{{file.size}}</span>
 									</div>
