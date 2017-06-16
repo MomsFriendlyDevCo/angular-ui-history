@@ -34,7 +34,7 @@ angular.module('angular-ui-history',[
 	template: `
 		<div class="ui-history">
 			<!-- Modal: Upload list {{{ -->
-			<div id="angular-ui-history-modal-uploadList" class="modal fade">
+			<div class="modal fade angular-ui-history-modal-uploadList">
 				<div class="modal-dialog">
 					<div class="modal-content">
 						<div class="modal-header">
@@ -292,7 +292,7 @@ angular.module('angular-ui-history',[
 		$ctrl.uploads;
 		$ctrl.isLoadingUploads;
 		$scope.$on('angular-ui-history.button.uploadList', ()=> {
-			angular.element('#angular-ui-history-modal-uploadList').modal('show');
+			$element.find('.angular-ui-history-modal-uploadList').modal('show');
 			$ctrl.refreshUploads();
 		});
 
