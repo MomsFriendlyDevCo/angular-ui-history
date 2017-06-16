@@ -4,10 +4,10 @@ var babel = require('gulp-babel');
 var cleanCSS = require('gulp-clean-css');
 var ghPages = require('gulp-gh-pages');
 var gulp = require('gulp');
-var rename = require('gulp-rename');
 var nodemon = require('gulp-nodemon');
-var uglify = require('gulp-uglify');
+var rename = require('gulp-rename');
 var rimraf = require('rimraf');
+var uglify = require('gulp-uglify');
 var watch = require('gulp-watch');
 
 gulp.task('default', ['build']);
@@ -68,7 +68,6 @@ gulp.task('css:min', ()=>
 		.pipe(cleanCSS())
 		.pipe(gulp.dest('./dist'))
 );
-
 
 gulp.task('gh-pages', ['build'], function() {
 	rimraf.sync('./gh-pages');
