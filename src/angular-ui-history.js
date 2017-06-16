@@ -5,6 +5,16 @@ angular.module('angular-ui-history',[
 	'ui.gravatar',
 ])
 
+// Provider {{{
+.provider('uiHistory', function() {
+	this.defaults = {};
+
+	this.$get = function() {
+		return this;
+	};
+})
+// }}}
+
 // Main widget {{{
 .component('uiHistory', {
 	bindings: {
@@ -185,7 +195,7 @@ angular.module('angular-ui-history',[
 			<!-- }}} -->
 		</div>
 	`,
-	controller: function($element, $http, $sce, $scope, $timeout) {
+	controller: function($element, $http, $sce, $scope, $timeout, uiHistory) {
 		var $ctrl = this;
 
 		// .posts - History display + fetcher {{{
@@ -333,6 +343,11 @@ angular.module('angular-ui-history',[
 		// Init {{{
 		$ctrl.$onInit = ()=> {
 			// Apply defaults
+			for (var key in uiHistory.defaults) {
+				if ($ctrl[key] === undefined) $ctrl[key] = uiHistory.defaults[key];
+			}
+
+			// Buttons is empty fill it with something appropriate based on settings
 			if (!$ctrl.buttons) {
 				$ctrl.buttons = [];
 				if ($ctrl.allowUpload) {

@@ -164,3 +164,15 @@ Directive Settings
 * To react for a button event set up an event listener against the action. For example if you have the button config `buttons="[{title: 'Foo', icon: 'foo-icon', action: 'foo'}]"` use `$scope.$on('angular-ui-history.button.foo')` to listen for its action
 * Listen to all button actions by listening to the event `$scope.$on('angular-ui-history.button')`
 * `onQuery` is best used as a service. e.g. in the template: `<ui-history on-query="$ctrl.myFilter(posts)"></ui-history>` and in the controller: `$ctrl.myFilter = data => data.filter(// ... some filter ...//)`
+
+
+uiHistoryProvider
+-----------------
+To set univeral component defaults use the `uiHistoryProvider.defaults` object:
+
+```javascript
+app.config(function(uiHistoryProvider) {
+	// Sets the default onError value
+	uiHistoryProvider.defaults.onError = err => console.log('ERROR', err);
+});
+```
