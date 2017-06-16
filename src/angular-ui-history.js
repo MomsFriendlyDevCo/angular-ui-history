@@ -10,6 +10,7 @@ angular.module('angular-ui-history',[
 	bindings: {
 		allowPost: '<',
 		allowUpload: '<',
+		allowUploadList: '<',
 		buttons: '<',
 		display: '<',
 		queryUrl: '<',
@@ -20,6 +21,34 @@ angular.module('angular-ui-history',[
 	},
 	template: `
 		<div class="ui-history">
+			<!-- Modal: Upload list {{{ -->
+			<div id="angular-ui-history-modal-uploadList" class="modal fade">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<a class="close" data-dismiss="modal"><i class="fa fa-times"></i></a>
+							<h4 class="modal-title">Upload List</h4>
+						</div>
+						<div class="modal-body">
+							<div ng-if="$ctrl.isLoadingUploads">
+								<h2>
+									<i class="fa fa-spinner fa-spin"></i>
+									Fetching list of files...
+								</h2>
+							</div>
+							<ul class="list-group">
+								<a ng-repeat="file in $ctrl.uploads track by file.filename" ng-href="{{file.url}}" class="list-group-item">
+									<div class="pull-right">
+										<span class="badge">{{file.size}}</span>
+									</div>
+									{{file.filename}}
+								</a>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- }}} -->
 			<div style="display: none">
 				<input id="angular-ui-history-upload-helper" name="file" multiple type="file"/>
 			</div>
@@ -239,7 +268,47 @@ angular.module('angular-ui-history',[
 					.finally(()=> $ctrl.isUploading = false)
 			})});
 
-		$scope.$on('angular-ui-history.button.upload', button => $ctrl.selectFiles());
+		$scope.$on('angular-ui-history.button.upload', ()=> $ctrl.selectFiles());
+		// }}}
+
+		// Upload list {{{
+		$ctrl.uploads;
+		$ctrl.isLoadingUploads;
+		$scope.$on('angular-ui-history.button.uploadList', ()=> {
+			angular.element('#angular-ui-history-modal-uploadList').modal('show');
+			$ctrl.refreshUploads();
+		});
+
+		$ctrl.refreshUploads = ()=> {
+			if (!$ctrl.queryUrl) throw new Error('queryUrl is undefined');
+			var resolvedUrl = angular.isString($ctrl.queryUploadsUrl) ? $ctrl.queryUploadsUrl : angular.isString($ctrl.queryUrl) ? $ctrl.queryUrl : $ctrl.queryUrl($ctrl);
+			if (!resolvedUrl) throw new Error('Resovled URL for uploads is empty');
+
+			$ctrl.isLoadingUploads = true;
+			$http.get(resolvedUrl)
+				.then(res => {
+					if (!angular.isArray(res.data)) throw new Error(`Expected file upload feed at URL "${resolvedUrl}" to be an array but got something else`);
+
+					$ctrl.uploads = res.data
+						.filter(i => i.type === undefined || i.type == 'user.upload')
+						.reduce((uploads, post) => {
+							if (post.filename) { // Single file
+								uploads.push(post);
+								return uploads;
+							} else if (post.files) { // Multiple files
+								return uploads.concat(post.files);
+							}
+						}, [])
+						.sort((a, b) => {
+							if (a.filename == b.filename) return 0;
+							return a.filename > b.filename ? 1 : -1;
+						});
+
+					console.log('FILES', $ctrl.uploads);
+				})
+				.catch(error => { if ($ctrl.onError) $ctrl.onError({error}) })
+				.finally(()=> $ctrl.isLoadingUploads = false);
+		};
 		// }}}
 
 		/**
@@ -251,14 +320,13 @@ angular.module('angular-ui-history',[
 		// Init {{{
 		$ctrl.$onInit = ()=> {
 			// Apply defaults
-			if (!$ctrl.buttons)
-				$ctrl.buttons = [
-					{
-						title: 'Upload files...',
-						icon: 'fa fa-file-o',
-						onClick: ()=> $ctrl.selectFiles(),
-					},
-				];
+			if (!$ctrl.buttons) {
+				$ctrl.buttons = [];
+				if ($ctrl.allowUpload) {
+					if ($ctrl.allowUploadList === undefined || $ctrl.allowUploadList) $ctrl.buttons.push({title: 'File list', icon: 'fa fa-folder-o', action: 'uploadList'});
+					$ctrl.buttons.push({title: 'Upload files...', icon: 'fa fa-file-o', action: 'upload'});
+				};
+			}
 
 			// Watch the queryUrl - this fires initially to refresh everything but will also respond to changes by causing a refresh
 			$scope.$watch('$ctrl.queryUrl', ()=> $ctrl.refresh());
