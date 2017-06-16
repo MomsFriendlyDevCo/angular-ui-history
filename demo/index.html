@@ -45,6 +45,7 @@
 					{title: 'Custom Button', icon: 'fa fa-flag', action: 'custom'},
 					{title: 'Upload files...', icon: 'fa fa-file-o', action: 'upload'}
 				]"
+				on-query="filterQuery(posts)"
 			></ui-history>
 
 			<div ng-if="isGitHub" class="alert alert-warning">

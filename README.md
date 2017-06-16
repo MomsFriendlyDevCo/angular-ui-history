@@ -151,6 +151,7 @@ Directive Settings
 | `queryUrl`    | `string` or `function` | `undefined`     | Where to fetch the existing history from. If this is a function it is expected to provide the GET string to use |
 | `postUrl`     | `string` or `function` | `undefined`     | Where to post the history items created if `allowPost == true`. This end-point gets a single `req.body.body` value which is the HTML output of the WYSIWYG post. If undefined, `queryUrl` will be used |
 | `onError`     | `function`             | `undefined`     | How to catch error messages from any of the interfaces. Called as `({error})`                                   |
+| `onQuery`     | `function`             | `undefined`     | A pre-query rendering hook after the data has been retrieved from the server. If this function returns an array its contents will be used as the post content. This can be useful as a filter / mangling service |
 | `onUpload`    | `function`             | `undefined`     | Event fired when a file upload is successful. Called as `({serverResponse})`                                    |
 
 
@@ -158,3 +159,4 @@ Directive Settings
 
 * To react for a button event set up an event listener against the action. For example if you have the button config `buttons="[{title: 'Foo', icon: 'foo-icon', action: 'foo'}]"` use `$scope.$on('angular-ui-history.button.foo')` to listen for its action
 * Listen to all button actions by listening to the event `$scope.$on('angular-ui-history.button')`
+* `onQuery` is best used as a service. e.g. in the template: `<ui-history on-query="$ctrl.myFilter(posts)"></ui-history>` and in the controller: `$ctrl.myFilter = data => data.filter(// ... some filter ...//)`

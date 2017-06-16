@@ -14,6 +14,7 @@ angular.module('angular-ui-history',[
 		display: '<',
 		queryUrl: '<',
 		postUrl: '<',
+		onQuery: '&?',
 		onUpload: '&?',
 		onError: '&?',
 	},
@@ -156,7 +157,7 @@ angular.module('angular-ui-history',[
 	controller: function($element, $http, $sce, $scope, $timeout) {
 		var $ctrl = this;
 
-		// .posts - History display {{{
+		// .posts - History display + fetcher {{{
 		$ctrl.posts;
 		$ctrl.isLoading = false;
 		$ctrl.refresh = ()=> {
@@ -174,6 +175,12 @@ angular.module('angular-ui-history',[
 						if (post.type == 'user.comment' || post.type == 'user.status' || post.type == 'system.status') post.body = $sce.trustAsHtml(post.body);
 						return post;
 					});
+				})
+				.then(()=> { // If user has a onQuery handler wait for it to mangle / filter the data
+					if ($ctrl.onQuery) {
+						var res = $ctrl.onQuery({posts: $ctrl.posts});
+						if (angular.isArray(res)) $ctrl.posts = res;
+					}
 				})
 				.catch(error => { if ($ctrl.onError) $ctrl.onError({error}) })
 				.finally(()=> $ctrl.isLoading = false);
