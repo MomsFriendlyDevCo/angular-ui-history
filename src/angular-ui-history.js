@@ -15,9 +15,11 @@ angular.module('angular-ui-history',[
 		display: '<',
 		queryUrl: '<',
 		postUrl: '<',
+		onError: '&?',
+		onLoadingStart: '&?',
+		onLoadingStop: '&?',
 		onQuery: '&?',
 		onUpload: '&?',
-		onError: '&?',
 	},
 	template: `
 		<div class="ui-history">
@@ -197,6 +199,8 @@ angular.module('angular-ui-history',[
 			var resolvedUrl = angular.isString($ctrl.queryUrl) ? $ctrl.queryUrl : $ctrl.queryUrl($ctrl);
 			if (!resolvedUrl) throw new Error('Resovled URL is empty');
 
+			if ($ctrl.onLoadingStart) $ctrl.onLoadingStart();
+
 			$http.get(resolvedUrl)
 				.then(res => {
 					if (!angular.isArray(res.data)) throw new Error(`Expected history feed at URL "${resolvedUrl}" to be an array but got something else`);
@@ -212,7 +216,10 @@ angular.module('angular-ui-history',[
 					}
 				})
 				.catch(error => { if ($ctrl.onError) $ctrl.onError({error}) })
-				.finally(()=> $ctrl.isLoading = false);
+				.finally(()=> $ctrl.isLoading = false)
+				.finally(()=> {
+					if ($ctrl.onLoadingStop) $ctrl.onLoadingStop();
+				})
 		};
 		// }}}
 
@@ -285,6 +292,9 @@ angular.module('angular-ui-history',[
 			if (!resolvedUrl) throw new Error('Resovled URL for uploads is empty');
 
 			$ctrl.isLoadingUploads = true;
+
+			if ($ctrl.onLoadingStart) $ctrl.onLoadingStart();
+
 			$http.get(resolvedUrl)
 				.then(res => {
 					if (!angular.isArray(res.data)) throw new Error(`Expected file upload feed at URL "${resolvedUrl}" to be an array but got something else`);
@@ -307,7 +317,10 @@ angular.module('angular-ui-history',[
 					console.log('FILES', $ctrl.uploads);
 				})
 				.catch(error => { if ($ctrl.onError) $ctrl.onError({error}) })
-				.finally(()=> $ctrl.isLoadingUploads = false);
+				.finally(()=> $ctrl.isLoadingUploads = false)
+				.finally(()=> {
+					if ($ctrl.onLoadingStop) $ctrl.onLoadingStop();
+				})
 		};
 		// }}}
 
