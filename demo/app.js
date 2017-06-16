@@ -4,4 +4,6 @@ var app = angular.module("app", [
 
 app.controller("historyExampleCtrl", function($scope) {
 	$scope.isGitHub = /\.github.io$/.test(document.location.hostname);
+
+	$scope.$on('angular-ui-history.button.custom', ()=> alert('Hello!'));
 });

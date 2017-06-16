@@ -10,6 +10,7 @@ angular.module('angular-ui-history',[
 	bindings: {
 		allowPost: '<',
 		allowUpload: '<',
+		buttons: '<',
 		display: '<',
 		queryUrl: '<',
 		postUrl: '<',
@@ -27,7 +28,7 @@ angular.module('angular-ui-history',[
 					<h3><i class="fa fa-spinner fa-spin"></i> Posting...</h3>
 				</div>
 				<div ng-show="!$ctrl.isPosting">
-					<ui-history-editor on-post="$ctrl.makePost(body)" buttons="$ctrl.editorButtons"></ui-history-editor>
+					<ui-history-editor on-post="$ctrl.makePost(body)" buttons="$ctrl.buttons"></ui-history-editor>
 				</div>
 				<hr/>
 			</div>
@@ -146,7 +147,7 @@ angular.module('angular-ui-history',[
 					<h3><i class="fa fa-spinner fa-spin"></i> Posting...</h3>
 				</div>
 				<div ng-show="!$ctrl.isPosting">
-					<ui-history-editor on-post="$ctrl.makePost(body)" buttons="$ctrl.editorButtons"></ui-history-editor>
+					<ui-history-editor on-post="$ctrl.makePost(body)" buttons="$ctrl.buttons"></ui-history-editor>
 				</div>
 			</div>
 			<!-- }}} -->
@@ -154,16 +155,6 @@ angular.module('angular-ui-history',[
 	`,
 	controller: function($element, $http, $sce, $scope, $timeout) {
 		var $ctrl = this;
-
-		// Editor setup {{{
-		$ctrl.editorButtons = [
-			{
-				title: 'Upload files...',
-				icon: 'fa fa-file-o',
-				onClick: ()=> $ctrl.selectFiles(),
-			},
-		];
-		// }}}
 
 		// .posts - History display {{{
 		$ctrl.posts;
@@ -240,6 +231,8 @@ angular.module('angular-ui-history',[
 					.then(()=> $ctrl.refresh())
 					.finally(()=> $ctrl.isUploading = false)
 			})});
+
+		$scope.$on('angular-ui-history.button.upload', button => $ctrl.selectFiles());
 		// }}}
 
 		/**
@@ -249,7 +242,20 @@ angular.module('angular-ui-history',[
 		// }}}
 
 		// Init {{{
-		$ctrl.$onInit = ()=> $ctrl.refresh();
+		$ctrl.$onInit = ()=> {
+			// Apply defaults
+			if (!$ctrl.buttons)
+				$ctrl.buttons = [
+					{
+						title: 'Upload files...',
+						icon: 'fa fa-file-o',
+						onClick: ()=> $ctrl.selectFiles(),
+					},
+				];
+
+			// Watch the queryUrl - this fires initially to refresh everything but will also respond to changes by causing a refresh
+			$scope.$watch('$ctrl.queryUrl', ()=> $ctrl.refresh());
+		};
 		// }}}
 	},
 })
@@ -311,7 +317,7 @@ angular.module('angular-ui-history',[
 									<button class="ql-clean" value="ordered" ng-attr-title="{{'Clear formatting'}}"></button>
 								</span>
 								<div class="pull-right">
-									<a ng-repeat="button in $ctrl.buttons" class="btn" ng-class="$ctrl.class || 'btn-default'" ng-click="button.onClick()">
+									<a ng-repeat="button in $ctrl.buttons" class="btn" ng-class="$ctrl.class || 'btn-default'" ng-click="$ctrl.runButton(button)">
 										<i ng-if="button.icon" class="{{button.icon}}"></i>
 										{{button.title}}
 									</a>
@@ -328,7 +334,7 @@ angular.module('angular-ui-history',[
 			</div>
 		</form>
 	`,
-	controller: function() {
+	controller: function($scope) {
 		var $ctrl = this;
 
 		// Quill setup {{{
@@ -340,6 +346,17 @@ angular.module('angular-ui-history',[
 			if (!$ctrl.onPost) throw new Error('Post content provided but no onPost binding defined');
 			var ret = $ctrl.onPost({body: $ctrl.newPost.body});
 			if (angular.isFunction(ret.then)) ret.then(()=> $ctrl.newPost = {body: ''});
+		};
+
+		/**
+		* Execute the event bubbling for the given button
+		* @param {Object} button The button object that triggered the event
+		* @fires angular-ui-history.button.${button.action}
+		* @fires angular-ui-history.button
+		*/
+		$ctrl.runButton = button => {
+			if (button.action) $scope.$emit(`angular-ui-history.button.${button.action}`, button);
+			$scope.$emit('angular-ui-history.button', button);
 		};
 	},
 })

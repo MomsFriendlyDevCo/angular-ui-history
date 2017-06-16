@@ -21,6 +21,10 @@
 	color: #fff;
 }
 
+.ui-history ng-quill-toolbar a.btn + a.btn {
+	margin-left: 5px;
+}
+
 .ui-history .form-group > .col-sm-12 {
 	margin-bottom: 50px;
 }

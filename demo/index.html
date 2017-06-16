@@ -41,6 +41,10 @@
 				post-url="'history.json'"
 				allow-post="true"
 				allow-upload="true"
+				buttons="[
+					{title: 'Custom Button', icon: 'fa fa-flag', action: 'custom'},
+					{title: 'Upload files...', icon: 'fa fa-file-o', action: 'upload'}
+				]"
 			></ui-history>
 
 			<div ng-if="isGitHub" class="alert alert-warning">

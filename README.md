@@ -146,8 +146,15 @@ Directive Settings
 |---------------|------------------------|-----------------|-----------------------------------------------------------------------------------------------------------------|
 | `allowPost`   | `boolean`              | `false`         | Whether to allow posting of new comments                                                                        |
 | `allowUpload` | `boolean`              | `false`         | Whether to allow file attachments in the comment feed                                                           |
-| `display`     | `string`               | `'oldestFirst'` | How to display posts. Can be either `'recentFirst'` or `'oldestFirst'`                                      |
+| `buttons`     | `array`                | Upload button   | Collection of buttons to display in the toolbar. Each must have a `title`, `icon` and an optional `action` property. See notes below on how to react to events |
+| `display`     | `string`               | `'oldestFirst'` | How to display posts. Can be either `'recentFirst'` or `'oldestFirst'`                                          |
 | `queryUrl`    | `string` or `function` | `undefined`     | Where to fetch the existing history from. If this is a function it is expected to provide the GET string to use |
 | `postUrl`     | `string` or `function` | `undefined`     | Where to post the history items created if `allowPost == true`. This end-point gets a single `req.body.body` value which is the HTML output of the WYSIWYG post. If undefined, `queryUrl` will be used |
 | `onError`     | `function`             | `undefined`     | How to catch error messages from any of the interfaces. Called as `({error})`                                   |
 | `onUpload`    | `function`             | `undefined`     | Event fired when a file upload is successful. Called as `({serverResponse})`                                    |
+
+
+**Notes:**
+
+* To react for a button event set up an event listener against the action. For example if you have the button config `buttons="[{title: 'Foo', icon: 'foo-icon', action: 'foo'}]"` use `$scope.$on('angular-ui-history.button.foo')` to listen for its action
+* Listen to all button actions by listening to the event `$scope.$on('angular-ui-history.button')`
