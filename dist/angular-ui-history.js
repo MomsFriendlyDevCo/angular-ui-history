@@ -148,7 +148,9 @@ angular.module('angular-ui-history', ['angular-bs-tooltip', 'ngQuill', 'relative
 
 				$ctrl.uploads = res.data.filter(function (i) {
 					return i.type === undefined || i.type == 'user.upload';
-				}).reduce(function (uploads, post) {
+				}) // Filter out non-uploads
+				.reduce(function (uploads, post) {
+					// Compress multiple files into a flattened array
 					if (post.filename) {
 						// Single file
 						uploads.push(post);
@@ -158,9 +160,12 @@ angular.module('angular-ui-history', ['angular-bs-tooltip', 'ngQuill', 'relative
 						return uploads.concat(post.files);
 					}
 				}, []).sort(function (a, b) {
+					// Sort by filename A-Z
 					if (a.filename == b.filename) return 0;
 					return a.filename > b.filename ? 1 : -1;
-				});
+				}).filter(function (i, index, arr) {
+					return index == 0 || arr[index - 1].filename != i.filename;
+				}); // Remove duplicate filenames
 			}).catch(function (error) {
 				if ($ctrl.onError) $ctrl.onError({ error: error });
 			}).finally(function () {

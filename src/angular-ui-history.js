@@ -313,8 +313,8 @@ angular.module('angular-ui-history',[
 					if (!angular.isArray(res.data)) throw new Error(`Expected file upload feed at URL "${resolvedUrl}" to be an array but got something else`);
 
 					$ctrl.uploads = res.data
-						.filter(i => i.type === undefined || i.type == 'user.upload')
-						.reduce((uploads, post) => {
+						.filter(i => i.type === undefined || i.type == 'user.upload') // Filter out non-uploads
+						.reduce((uploads, post) => { // Compress multiple files into a flattened array
 							if (post.filename) { // Single file
 								uploads.push(post);
 								return uploads;
@@ -322,10 +322,11 @@ angular.module('angular-ui-history',[
 								return uploads.concat(post.files);
 							}
 						}, [])
-						.sort((a, b) => {
+						.sort((a, b) => { // Sort by filename A-Z
 							if (a.filename == b.filename) return 0;
 							return a.filename > b.filename ? 1 : -1;
-						});
+						})
+						.filter((i,index,arr) => index == 0 || arr[index-1].filename != i.filename) // Remove duplicate filenames
 				})
 				.catch(error => { if ($ctrl.onError) $ctrl.onError({error}) })
 				.finally(()=> $ctrl.isLoadingUploads = false)
