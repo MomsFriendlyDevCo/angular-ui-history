@@ -167,6 +167,16 @@ Directive Settings
 * `onQuery` is best used as a service. e.g. in the template: `<ui-history on-query="$ctrl.myFilter(posts)"></ui-history>` and in the controller: `$ctrl.myFilter = data => data.filter(// ... some filter ...//)`
 
 
+Events
+------
+
+| Event                             | Arguments    | Description                                                  |
+|-----------------------------------|--------------|--------------------------------------------------------------|
+| `angular-ui-history.button`       | `(button)`   | Fired when the user presses any button                       |
+| `angular-ui-history.button.${ID}` | `()`         | Fired when the user presses the button desginated by `${ID}` |
+| `angular-ui-history.template`     | `(template)` | Fired when the user selectes a template                      |
+
+
 uiHistoryProvider
 -----------------
 To set univeral component defaults use the `uiHistoryProvider.defaults` object:
