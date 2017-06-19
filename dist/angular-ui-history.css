@@ -1,6 +1,18 @@
 .ui-history {
 }
 
+.ui-history a {
+	cursor: pointer;
+}
+
+.ui-history .dropdown-menu > li > a {
+	padding: 3px 10px;
+}
+
+.ui-history .dropdown-menu > li > a > i {
+	margin-right: 5px;
+}
+
 .ui-history .ui-history-item {
 	position: relative;
 }
@@ -19,6 +31,19 @@
 
 .ui-history ng-quill-toolbar a.btn.btn-success {
 	color: #fff;
+}
+
+.ui-history ng-quill-toolbar a.btn + a.btn {
+	margin-left: 5px;
+}
+
+.ui-history .form-group > .col-sm-12 {
+	margin-bottom: 50px;
+}
+
+.ui-history .form-group > .col-sm-12,
+.ui-history .ql-container {
+	height: 250px;
 }
 
 /* type=user.comment {{{ */
@@ -101,6 +126,28 @@
 }
 
 .ui-history .ui-history-user-change > .ui-history-user-change-main {
+	position: relative;
+	border-radius: 0;
+	padding-top: 15px;
+}
+/* }}} */
+/* type=user.upload {{{ */
+.ui-history .ui-history-user-upload {
+	position: relative;
+	min-height: 60px;
+	padding-left: 60px;
+	margin: 19px 0;
+}
+
+.ui-history .ui-history-user-upload > .ui-history-user-upload-user {
+	width: 50px;
+	height: 50px;
+	border-radius: 3px;
+	float: left;
+	margin-left: -60px;
+}
+
+.ui-history .ui-history-user-upload > .ui-history-user-upload-main {
 	position: relative;
 	border-radius: 0;
 	padding-top: 15px;

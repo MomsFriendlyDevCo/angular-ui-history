@@ -36,9 +36,21 @@
 			<h2>Angular-UI-History - Simple example</h2>
 
 			<ui-history
+				display="'recentFirst'"
 				query-url="'history.json'"
 				post-url="'history.json'"
 				allow-post="true"
+				allow-upload="true"
+				buttons="[
+					{title: 'Custom Button', icon: 'fa fa-flag', action: 'custom'},
+					{title: 'File list', icon: 'fa fa-folder-o', action: 'uploadList'},
+					{title: 'Upload files...', icon: 'fa fa-file-o', action: 'upload'},
+				]"
+				templates="[
+					{title: 'Call back', icon: 'fa fa-fw fa-phone', content: 'I will return your call shortly'},
+					{title: 'PICNIC', icon: 'fa fa-fw fa-user', content: 'Problem in chair not in computer'},
+				]"
+				on-query="filterQuery(posts)"
 			></ui-history>
 
 			<div ng-if="isGitHub" class="alert alert-warning">
