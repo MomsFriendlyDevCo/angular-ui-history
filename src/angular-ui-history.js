@@ -25,6 +25,7 @@ angular.module('angular-ui-history',[
 		display: '<',
 		queryUrl: '<',
 		postUrl: '<',
+		templates: '<',
 		onError: '&?',
 		onLoadingStart: '&?',
 		onLoadingStop: '&?',
@@ -73,7 +74,11 @@ angular.module('angular-ui-history',[
 					<h3><i class="fa fa-spinner fa-spin"></i> Posting...</h3>
 				</div>
 				<div ng-show="!$ctrl.isPosting">
-					<ui-history-editor on-post="$ctrl.makePost(body)" buttons="$ctrl.buttons"></ui-history-editor>
+					<ui-history-editor
+						buttons="$ctrl.buttons"
+						templates="$ctrl.templates"
+						on-post="$ctrl.makePost(body)"
+					></ui-history-editor>
 				</div>
 				<hr/>
 			</div>
@@ -192,7 +197,11 @@ angular.module('angular-ui-history',[
 					<h3><i class="fa fa-spinner fa-spin"></i> Posting...</h3>
 				</div>
 				<div ng-show="!$ctrl.isPosting">
-					<ui-history-editor on-post="$ctrl.makePost(body)" buttons="$ctrl.buttons"></ui-history-editor>
+					<ui-history-editor
+						buttons="$ctrl.buttons"
+						templates="$ctrl.templates"
+						on-post="$ctrl.makePost(body)"
+					></ui-history-editor>
 				</div>
 			</div>
 			<!-- }}} -->
@@ -374,8 +383,9 @@ angular.module('angular-ui-history',[
 */
 .component('uiHistoryEditor', {
 	bindings: {
-		onPost: '&',
 		buttons: '<',
+		templates: '<',
+		onPost: '&',
 	},
 	template: `
 		<form ng-submit="$ctrl.makePost()" class="form-horizontal">
@@ -422,6 +432,20 @@ angular.module('angular-ui-history',[
 									<button class="ql-clean" value="ordered" ng-attr-title="{{'Clear formatting'}}"></button>
 								</span>
 								<div class="pull-right">
+									<div class="btn-group">
+										<a ng-if="$ctrl.templates" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+											Template
+											<i class="fa fa-chevron-down"></i>
+										</a>
+										<ul class="dropdown-menu">
+											<li ng-repeat="template in $ctrl.templates">
+												<a ng-click="$ctrl.setTemplate(template)">
+													<i ng-if="template.icon" ng-class="template.icon"></i>
+													{{template.title}}
+												</a>
+											</li>
+										</ul>
+									</div>
 									<a ng-repeat="button in $ctrl.buttons" class="btn" ng-class="$ctrl.class || 'btn-default'" ng-click="$ctrl.runButton(button)">
 										<i ng-if="button.icon" class="{{button.icon}}"></i>
 										{{button.title}}
@@ -462,6 +486,16 @@ angular.module('angular-ui-history',[
 		$ctrl.runButton = button => {
 			if (button.action) $scope.$emit(`angular-ui-history.button.${button.action}`, button);
 			$scope.$emit('angular-ui-history.button', button);
+		};
+
+		/**
+		* Select a template to use
+		* @param {Object} template The selected template object
+		* @fires angular-ui-history.template.${template}
+		*/
+		$ctrl.setTemplate = template => {
+			$ctrl.newPost.body = template.content;
+			$scope.$emit('angular-ui-history.template', template);
 		};
 	},
 })
