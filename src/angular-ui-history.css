@@ -196,3 +196,17 @@
 	border-radius: 4px;
 }
 /* }}} */
+
+/* Print mode {{{ */
+@media print {
+	/* Hide interactive components when printing */
+	.ui-history ui-history-editor {
+		display: none;
+	}
+
+	/* Override Bootstrap link display */
+	.ui-history a[href]:after {
+		display: none;
+	}
+}
+/* }}} */
