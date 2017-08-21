@@ -474,8 +474,10 @@ angular.module('angular-ui-history',[
 		$ctrl.makePost = ()=> {
 			if (!$ctrl.onPost) throw new Error('Post content provided but no onPost binding defined');
 			var ret = $ctrl.onPost({body: $ctrl.newPost.body});
+			if (!ret) return; // Didn't return a promise - ignore
 			if (angular.isFunction(ret.then)) ret.then(()=> $ctrl.newPost = {body: ''});
 		};
+		$scope.$on('angular-ui-history.post', $ctrl.makePost);
 
 		/**
 		* Execute the event bubbling for the given button
