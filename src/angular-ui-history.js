@@ -36,30 +36,23 @@ angular.module('angular-ui-history',[
 		<div class="ui-history">
 			<!-- Modal: Upload list {{{ -->
 			<div class="modal fade angular-ui-history-modal-uploadList">
-				<div class="modal-dialog">
+				<div ng-if="$ctrl.showFilesModal" class="modal-dialog">
 					<div class="modal-content">
 						<div class="modal-header">
 							<a class="close" data-dismiss="modal"><i class="fa fa-times"></i></a>
 							<h4 class="modal-title">Upload List</h4>
 						</div>
 						<div class="modal-body">
-							<div ng-if="$ctrl.isLoadingUploads">
-								<h2>
-									<i class="fa fa-spinner fa-spin"></i>
-									Fetching list of files...
-								</h2>
-							</div>
-							<div ng-if="!$ctrl.isLoadingUploads && $ctrl.uploads.length == 0" class="text-muted text-center">
-								No file uploads found
-							</div>
-							<ul class="list-group">
-								<a ng-repeat="file in $ctrl.uploads track by file.filename" ng-href="{{file.url}}" target="_blank" class="list-group-item">
-									<div class="pull-right">
-										<span class="badge">{{file.size}}</span>
-									</div>
-									{{file.filename}}
-								</a>
-							</ul>
+							<ui-history-files
+								allow-upload="$ctrl.allowUpload"
+								query-url="$ctrl.queryUrl"
+								post-url="$ctrl.postUrl"
+								on-error="$ctrl.onError"
+								on-loading-start="$ctrl.onLoadingStart"
+								on-loading-stop="$ctrl.onLoadingStop"
+								on-query="$ctrl.onQuery"
+								on-upload="$ctrl.onUpload"
+							></ui-history-files>
 						</div>
 					</div>
 				</div>
@@ -300,55 +293,20 @@ angular.module('angular-ui-history',[
 		$scope.$on('angular-ui-history.button.upload', ()=> $ctrl.selectFiles());
 		// }}}
 
-		// Upload list {{{
-		$ctrl.uploads;
-		$ctrl.isLoadingUploads;
-		$scope.$on('angular-ui-history.button.uploadList', ()=> {
-			$element.find('.angular-ui-history-modal-uploadList').modal('show');
-			$ctrl.refreshUploads();
-		});
-
-		$ctrl.refreshUploads = ()=> {
-			if (!$ctrl.queryUrl) throw new Error('queryUrl is undefined');
-			var resolvedUrl = angular.isString($ctrl.queryUploadsUrl) ? $ctrl.queryUploadsUrl : angular.isString($ctrl.queryUrl) ? $ctrl.queryUrl : $ctrl.queryUrl($ctrl);
-			if (!resolvedUrl) throw new Error('Resovled URL for uploads is empty');
-
-			$ctrl.isLoadingUploads = true;
-
-			if ($ctrl.onLoadingStart) $ctrl.onLoadingStart();
-
-			$http.get(resolvedUrl)
-				.then(res => {
-					if (!angular.isArray(res.data)) throw new Error(`Expected file upload feed at URL "${resolvedUrl}" to be an array but got something else`);
-
-					$ctrl.uploads = res.data
-						.filter(i => i.type === undefined || i.type == 'user.upload') // Filter out non-uploads
-						.reduce((uploads, post) => { // Compress multiple files into a flattened array
-							if (post.filename) { // Single file
-								uploads.push(post);
-								return uploads;
-							} else if (post.files) { // Multiple files
-								return uploads.concat(post.files);
-							}
-						}, [])
-						.sort((a, b) => { // Sort by filename A-Z
-							if (a.filename == b.filename) return 0;
-							return a.filename > b.filename ? 1 : -1;
-						})
-						.filter((i,index,arr) => index == 0 || arr[index-1].filename != i.filename) // Remove duplicate filenames
-				})
-				.catch(error => { if ($ctrl.onError) $ctrl.onError({error}) })
-				.finally(()=> $ctrl.isLoadingUploads = false)
-				.finally(()=> {
-					if ($ctrl.onLoadingStop) $ctrl.onLoadingStop();
-				})
-		};
-		// }}}
-
 		/**
 		* Trigger the file upload dialog using the upload helper input element
 		*/
 		$ctrl.selectFiles = ()=> $element.find('#angular-ui-history-upload-helper').click();
+		// }}}
+
+		// File upload list {{{
+		$ctrl.showFilesModal = false;
+
+		$scope.$on('angular-ui-history.button.uploadList', ()=> {
+			$ctrl.showFilesModal = true;
+			$element.find('.angular-ui-history-modal-uploadList').modal('show')
+				.one('hidden.bs.modal', ()=> $scope.$apply(()=> $ctrl.showFilesModal = true));
+		});
 		// }}}
 
 		// Init {{{
@@ -500,5 +458,86 @@ angular.module('angular-ui-history',[
 			$scope.$emit('angular-ui-history.template', template);
 		};
 	},
+})
+// }}}
+
+// File listing widget {{{
+.component('uiHistoryFiles', {
+	bindings: {
+		allowUpload: '<',
+		queryUrl: '<',
+		postUrl: '<',
+		onError: '&?',
+		onLoadingStart: '&?',
+		onLoadingStop: '&?',
+		onQuery: '&?',
+		onUpload: '&?',
+	},
+	controller: function($http, $scope) {
+		var $ctrl = this;
+
+		$ctrl.uploads;
+
+		// Data refresher {{{
+		$ctrl.isLoading;
+
+		$ctrl.refresh = ()=> {
+			if (!$ctrl.queryUrl) throw new Error('queryUrl is undefined');
+			var resolvedUrl = angular.isString($ctrl.queryUploadsUrl) ? $ctrl.queryUploadsUrl : angular.isString($ctrl.queryUrl) ? $ctrl.queryUrl : $ctrl.queryUrl($ctrl);
+			if (!resolvedUrl) throw new Error('Resovled URL for uploads is empty');
+
+			$ctrl.isLoading = true;
+
+			if ($ctrl.onLoadingStart) $ctrl.onLoadingStart();
+
+			$http.get(resolvedUrl)
+				.then(res => {
+					if (!angular.isArray(res.data)) throw new Error(`Expected file upload feed at URL "${resolvedUrl}" to be an array but got something else`);
+
+					$ctrl.uploads = res.data
+						.filter(i => i.type === undefined || i.type == 'user.upload') // Filter out non-uploads
+						.reduce((uploads, post) => { // Compress multiple files into a flattened array
+							if (post.filename) { // Single file
+								uploads.push(post);
+								return uploads;
+							} else if (post.files) { // Multiple files
+								return uploads.concat(post.files);
+							}
+						}, [])
+						.sort((a, b) => { // Sort by filename A-Z
+							if (a.filename == b.filename) return 0;
+							return a.filename > b.filename ? 1 : -1;
+						})
+						.filter((i,index,arr) => index == 0 || arr[index-1].filename != i.filename) // Remove duplicate filenames
+				})
+				.catch(error => { if ($ctrl.onError) $ctrl.onError({error}) })
+				.finally(()=> $ctrl.isLoading = false)
+				.finally(()=> {
+					if ($ctrl.onLoadingStop) $ctrl.onLoadingStop();
+				})
+		};
+
+		$scope.$evalAsync($ctrl.refresh);
+		// }}}
+	},
+	template: `
+		<div ng-if="$ctrl.isLoading">
+			<h2>
+				<i class="fa fa-spinner fa-spin"></i>
+				Fetching list of files...
+			</h2>
+		</div>
+		<div ng-if="!$ctrl.isLoading && $ctrl.uploads.length == 0" class="text-muted text-center">
+			No file uploads found
+		</div>
+		<ul class="list-group">
+			<a ng-repeat="file in $ctrl.uploads track by file.filename" ng-href="{{file.url}}" target="_blank" class="list-group-item">
+				<div class="pull-right">
+					<span class="badge">{{file.size}}</span>
+				</div>
+				{{file.filename}}
+			</a>
+		</ul>
+	`
 })
 // }}}
