@@ -2,6 +2,15 @@ ui-history-files
 ================
 File listing component for [angular-ui-history](https://github.com/MomsFriendlyDevCo/angular-ui-history).
 
+```html
+<ui-history-files
+	query-url="'history.json'"
+	post-url="'history.json'"
+	allow-post="true"
+	on-query="filterQuery(posts)"
+></ui-history-files>
+```
+
 
 Directive Settings
 ------------------

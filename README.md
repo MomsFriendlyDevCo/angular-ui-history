@@ -55,5 +55,5 @@ API
 This package profiles the following directives:
 
 * [uiHistoryProvider (service)](./docs/uiHistoryProvider.md)
-* [ui-history (directive)](./docs/history.md)
-* [ui-history-files (directive)](./docs/history-files.md)
+* [ui-history (directive)](./docs/ui-history.md)
+* [ui-history-files (directive)](./docs/ui-history-files.md)
