@@ -47,7 +47,7 @@ var app = angular.module('app', ['angular-ui-history'])
 ```
 
 
-A demo is also available. To use this [follow the instructions in the demo directory](./demo/README.md).
+A demo is also available in the source code - see [follow the instructions in the demo directory](./demo/README.md).
 
 
 API

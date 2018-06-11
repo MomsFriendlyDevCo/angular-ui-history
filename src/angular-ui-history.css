@@ -25,6 +25,29 @@
 	z-index: 100;
 }
 
+.ui-history .ui-history-item .ui-history-tags {
+	text-align: right;
+	margin-top: -12px;
+}
+
+.ui-history .ui-history-item .ui-history-tags .ui-history-tag {
+	display: inline;
+	padding: .2em .6em .3em;
+	font-size: 75%;
+	font-weight: 700;
+	line-height: 1;
+	color: #fff;
+	text-align: center;
+	white-space: nowrap;
+	vertical-align: baseline;
+	border-radius: .25em;
+	background-color: #5bc0de;
+}
+
+.ui-history .ui-history-item .ui-history-tags .ui-history-tag + .ui-history-tag {
+	margin-left: 2px;
+}
+
 .ui-history [ng-quill-editor] {
 	display: block;
 }

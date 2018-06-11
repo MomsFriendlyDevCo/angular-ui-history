@@ -79,6 +79,7 @@ These properties are common for all history item types.
 |--------------|----------------------|-------------------------------------------------------------------------------------------------------------------|
 | `type`       | `string`             | The type of the history item                                                                                      |
 | `date`       | `string` or `Date`   | The JavaScript Date object or a string that can be parsed into one representing when the history item was created |
+| `tags`       | `array`              | An array of strings to tag each post with                                                                         |
 
 
 ### type=user.change

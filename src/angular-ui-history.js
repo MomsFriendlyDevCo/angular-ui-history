@@ -80,7 +80,6 @@ angular.module('angular-ui-history',[
 				<div class="ui-history-timestamp" tooltip="{{post.date | date:'medium'}}">
 					{{post.date | relativeDate}}
 				</div>
-
 				<!-- type=user.change {{{ -->
 				<div ng-switch-when="user.change" class="ui-history-user-change">
 					<div class="ui-history-user-change-user">
@@ -181,6 +180,11 @@ angular.module('angular-ui-history',[
 					Unknown history type: [{{post.type}}]
 				</div>
 				<!-- }}} -->
+				<div ng-if="post.tags && post.tags.length" class="ui-history-tags">
+					<span ng-repeat="tag in post.tags" class="ui-history-tag">
+						{{tag}}
+					</span>
+				</div>
 			</div>
 			<div ng-if="!$ctrl.posts.length" class="text-muted text-center">No history to display</div>
 			<!-- Footer editor (if !display || display='oldestFirst') {{{ -->
