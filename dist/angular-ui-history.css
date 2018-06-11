@@ -17,12 +17,38 @@
 	position: relative;
 }
 
-.ui-history .ui-history-item .ui-history-timestamp {
+.ui-history .ui-history-item .ui-history-meta {
 	position: absolute;
 	top: 5px;
 	right: 8px;
-	color: #BBB;
 	z-index: 100;
+}
+
+.ui-history .ui-history-item .ui-history-timestamp {
+	display: inline-block;
+	color: #BBB;
+}
+
+.ui-history .ui-history-item .ui-history-tags {
+	display: inline-block;
+}
+
+.ui-history .ui-history-item .ui-history-tags .ui-history-tag {
+	display: inline;
+	padding: .2em .6em .3em;
+	font-size: 75%;
+	font-weight: 700;
+	line-height: 1;
+	color: #fff;
+	text-align: center;
+	white-space: nowrap;
+	vertical-align: baseline;
+	border-radius: .25em;
+	background-color: #5bc0de;
+}
+
+.ui-history .ui-history-item .ui-history-tags .ui-history-tag + .ui-history-tag {
+	margin-left: 2px;
 }
 
 .ui-history [ng-quill-editor] {
