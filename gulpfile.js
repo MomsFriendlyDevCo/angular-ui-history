@@ -82,7 +82,7 @@ gulp.task('gh-pages', ['build'], function() {
 		'./dist/**/*',
 		'./node_modules/angular/angular.min.js',
 		'./node_modules/angular-gravatar/build/angular-gravatar.min.js',
-		'./node_modules/angular-relative-date/dist/angular-relative-date.min.js',
+		'./node_modules/moment/min/moment.min.js',
 		'./node_modules/@momsfriendlydevco/angular-bs-tooltip/dist/angular-bs-tooltip.min.js',
 		'./node_modules/bootstrap/dist/css/bootstrap.min.css',
 		'./node_modules/bootstrap/dist/js/bootstrap.min.js',

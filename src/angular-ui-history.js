@@ -1,7 +1,6 @@
 angular.module('angular-ui-history',[
 	'angular-bs-tooltip',
 	'ngQuill',
-	'relativeDate',
 	'ui.gravatar',
 ])
 
@@ -15,7 +14,7 @@ angular.module('angular-ui-history',[
 })
 // }}}
 
-// Main widget {{{
+// uiHistory (directive) {{{
 .component('uiHistory', {
 	bindings: {
 		allowPost: '<',
@@ -77,8 +76,15 @@ angular.module('angular-ui-history',[
 			</div>
 			<!-- }}} -->
 			<div ng-repeat="post in $ctrl.posts | orderBy:'date':$ctrl.display=='recentFirst' track by post._id" ng-switch="post.type" class="ui-history-item">
-				<div class="ui-history-timestamp" tooltip="{{post.date | date:'medium'}}">
-					{{post.date | relativeDate}}
+				<div class="ui-history-meta">
+					<div ng-if="post.tags && post.tags.length" class="ui-history-tags">
+						<span ng-repeat="tag in post.tags" class="ui-history-tag">
+							{{tag}}
+						</span>
+					</div>
+					<div class="ui-history-timestamp" tooltip="{{post.date | date:'medium'}}">
+						{{post.date | uiHistoryDate}}
+					</div>
 				</div>
 				<!-- type=user.change {{{ -->
 				<div ng-switch-when="user.change" class="ui-history-user-change">
@@ -180,11 +186,6 @@ angular.module('angular-ui-history',[
 					Unknown history type: [{{post.type}}]
 				</div>
 				<!-- }}} -->
-				<div ng-if="post.tags && post.tags.length" class="ui-history-tags">
-					<span ng-repeat="tag in post.tags" class="ui-history-tag">
-						{{tag}}
-					</span>
-				</div>
 			</div>
 			<div ng-if="!$ctrl.posts.length" class="text-muted text-center">No history to display</div>
 			<!-- Footer editor (if !display || display='oldestFirst') {{{ -->
@@ -337,7 +338,7 @@ angular.module('angular-ui-history',[
 })
 // }}}
 
-// Post comment widget {{{
+// uiHistoryEditor (directive, post comment area) {{{
 /**
 * The post area WYSIWYG editor for angular-ui-history
 * @param {function} onPost The function to be called when the user has finished writing text. If this is a promise the input will be cleared if it resolves correctly
@@ -465,7 +466,7 @@ angular.module('angular-ui-history',[
 })
 // }}}
 
-// File listing widget {{{
+// uiHistoryFiles (directive, file listing area) {{{
 .component('uiHistoryFiles', {
 	bindings: {
 		allowUpload: '<',
@@ -543,5 +544,33 @@ angular.module('angular-ui-history',[
 			</a>
 		</ul>
 	`
+})
+// }}}
+
+// uiHistoryDate (filter) {{{
+/**
+* Parse a date object into a human readable string
+* Code chearfully stolen and refactored from https://github.com/samrith-s/relative_date
+* @see https://github.com/samrith-s/relative_date
+*/
+.filter('uiHistoryDate', function() {
+	return function(value) {
+		var date = moment(value);
+		if (!date._isValid) return 'Invalid date';
+
+		var diff = moment(Date.now()).diff(date, 'days');
+
+		if (diff < 0) {
+			return moment(date).fromNow(true) + ' from now';
+		} else if (diff < 1) {
+			return date.format('h:mma');
+		} else if (diff === 1) {
+			return 'Yesterday';
+		} else if (diff > 1 && diff < 7) {
+			return date.format('dddd');
+		} else {
+			return date.format('D MMMM, YYYY');
+		}
+	};
 })
 // }}}
