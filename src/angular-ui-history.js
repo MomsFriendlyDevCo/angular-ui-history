@@ -17,14 +17,15 @@ angular.module('angular-ui-history',[
 // uiHistory (directive) {{{
 .component('uiHistory', {
 	bindings: {
-		allowPost: '<',
-		allowUpload: '<',
-		allowUploadList: '<',
-		buttons: '<',
-		display: '<',
-		queryUrl: '<',
-		postUrl: '<',
-		templates: '<',
+		allowPost: '<?',
+		allowUpload: '<?',
+		allowUploadList: '<?',
+		buttons: '<?',
+		display: '<?',
+		posts: '<?',
+		queryUrl: '<?',
+		postUrl: '<?',
+		templates: '<?',
 		onError: '&?',
 		onLoadingStart: '&?',
 		onLoadingStop: '&?',
@@ -205,42 +206,68 @@ angular.module('angular-ui-history',[
 			<!-- }}} -->
 		</div>
 	`,
-	controller: function($element, $http, $sce, $scope, $timeout, uiHistory) {
+	controller: function($element, $http, $q, $rootScope, $sce, $scope, $timeout, uiHistory) {
 		var $ctrl = this;
 
-		// .posts - History display + fetcher {{{
+		// refresh + .posts - History display + fetcher {{{
 		$ctrl.posts;
 		$ctrl.isLoading = false;
+
+
+		/**
+		* Load all posts (either via the queryUrl or from the posts array)
+		* @returns {Promise}
+		*/
 		$ctrl.refresh = ()=> {
-			if (!$ctrl.queryUrl) throw new Error('queryUrl is undefined');
+			if ($ctrl.posts) return $q.resolve(); // User is supplying the post collection rather than us fetching it - do nothing
 
-			$ctrl.isLoading = true;
-
-			var resolvedUrl = angular.isString($ctrl.queryUrl) ? $ctrl.queryUrl : $ctrl.queryUrl($ctrl);
-			if (!resolvedUrl) throw new Error('Resovled URL is empty');
-
-			if ($ctrl.onLoadingStart) $ctrl.onLoadingStart();
-
-			$http.get(resolvedUrl)
-				.then(res => {
-					if (!angular.isArray(res.data)) throw new Error(`Expected history feed at URL "${resolvedUrl}" to be an array but got something else`);
-					$ctrl.posts = res.data.map(post => {
+			$q.resolve()
+				// Pre loading phase {{{
+				.then(()=> $ctrl.isLoading = true)
+				.then(()=> { if (angular.isFunction($ctrl.onLoadingStart)) return $ctrl.onLoadingStart() })
+ 				// }}}
+ 				// Data fetching - either via queryUrl or examining posts {{{
+				.then(()=> {
+					if (angular.isString($ctrl.queryUrl) || angular.isFunction($ctrl.queryUrl)) {
+						var resolvedUrl = angular.isString($ctrl.queryUrl) ? $ctrl.queryUrl : $ctrl.queryUrl($ctrl);
+						if (!resolvedUrl) throw new Error('Resovled URL is empty');
+						return $http.get(resolvedUrl)
+							.then(res => {
+								if (!angular.isArray(res.data)) {
+									throw new Error(`Expected history feed at URL "${resolvedUrl}" to be an array but got something else`);
+								} else {
+									return res.data;
+								}
+							})
+					} else if (angular.isArray($ctrl.posts)) {
+						return $ctrl.posts;
+					} else {
+						throw new Error('Cannot refresh posts - neither queryUrl (func / array) or posts (array) are specified');
+					}
+				})
+				// }}}
+				// Misc data mangling {{{
+				.then(data => {
+					$ctrl.posts = data.map(post => {
 						if (post.type == 'user.comment' || post.type == 'user.status' || post.type == 'system.status') post.body = $sce.trustAsHtml(post.body);
 						return post;
 					});
 				})
-				.then(()=> { // If user has a onQuery handler wait for it to mangle / filter the data
+				// }}}
+				// If user has a onQuery handler wait for it to mangle / filter the data {{{
+				.then(()=> {
 					if ($ctrl.onQuery) {
 						var res = $ctrl.onQuery({posts: $ctrl.posts});
 						if (angular.isArray(res)) $ctrl.posts = res;
 					}
 				})
-				.catch(error => { if ($ctrl.onError) $ctrl.onError({error}) })
+				// }}}
+				// Post loading + catchers {{{
+				.catch(error => { if (angular.isFunction($ctrl.onError)) $ctrl.onError({error}) })
 				.finally(()=> $ctrl.isLoading = false)
-				.finally(()=> {
-					if ($ctrl.onLoadingStop) $ctrl.onLoadingStop();
-				})
-		};
+				.finally(()=> { if (angular.isFunction($ctrl.onLoadingStop)) return $ctrl.onLoadingStop(); })
+				// }}}
+		}
 		// }}}
 
 		// .newPost - New post contents {{{
@@ -262,6 +289,7 @@ angular.module('angular-ui-history',[
 			$ctrl.isPosting = true;
 			return $http.post(resolvedUrl, {body})
 				.then(()=> $ctrl.refresh())
+				.then(()=> $rootScope.$broadcast('angular-ui-history.posted', body))
 				.catch(error => { if ($ctrl.onError) $ctrl.onError({error}) })
 				.finally(()=> $ctrl.isPosting = false);
 		};

@@ -34,11 +34,12 @@ Directive Settings
 | `display`         | `string`               | `'oldestFirst'` | How to display posts. Can be either `'recentFirst'` or `'oldestFirst'`                                          |
 | `queryUrl`        | `string` or `function` | `undefined`     | Where to fetch the existing history from. If this is a function it is expected to provide the GET string to use |
 | `queryUploadsUrl` | `string` or `function` | `undefined`     | Seperate URL to fetch files from if `allowUploadList` is enabled (Defaults to using `queryUrl` if unspecified)  |
+| `posts`           | `array`                | `undefined`     | List of posts to display instead of fetching via `queryUrl`                                                     |
 | `postUrl`         | `string` or `function` | `undefined`     | Where to post the history items created if `allowPost == true`. This end-point gets a single `req.body.body` value which is the HTML output of the WYSIWYG post. If undefined, `queryUrl` will be used |
 | `templates`       | `array`                | `undefined`     | Optional list of templates to quickly set the contents. Each item should be an object containing at least `title` and `content` with an optional `icon` |
 | `onError`         | `function`             | `undefined`     | How to catch error messages from any of the interfaces. Called as `({error})`                                   |
-| `onLoadingStart`  | `function`             | `undefined`     | Event to fire when a loading action begins (fetching posts, uploads etc.)                                       |
-| `onLoadingStop`   | `function`             | `undefined`     | Event to fire when a loading action copletes                                                                    |
+| `onLoadingStart`  | `function`             | `undefined`     | Function / Promise to resolve when a loading action begins (fetching posts, uploads etc.)                       |
+| `onLoadingStop`   | `function`             | `undefined`     | Function / Promise to resolve fire when a loading action copletes                                               |
 | `onQuery`         | `function`             | `undefined`     | A pre-query rendering hook after the data has been retrieved from the server. If this function returns an array its contents will be used as the post content. This can be useful as a filter / mangling service |
 | `onUpload`        | `function`             | `undefined`     | Event fired when a file upload is successful. Called as `({serverResponse})`                                    |
 
@@ -57,6 +58,7 @@ Events (Listenable)
 |-----------------------------------|--------------|--------------------------------------------------------------|
 | `angular-ui-history.button`       | `(button)`   | Fired when the user presses any button                       |
 | `angular-ui-history.button.${ID}` | `()`         | Fired when the user presses the button desginated by `${ID}` |
+| `angular-ui-history.posted`       | `(body)`     | Fired when the user makes (and has submitted successfully) a new post |
 | `angular-ui-history.template`     | `(template)` | Fired when the user selectes a template                      |
 
 
