@@ -43,7 +43,9 @@ angular.module('angular-ui-history', ['angular-bs-tooltip', 'ngQuill', 'ui.grava
   * @returns {Promise}
   */
 		$ctrl.refresh = function () {
-			if ($ctrl.posts) return $q.resolve(); // User is supplying the post collection rather than us fetching it - do nothing
+			var force = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
+			if (!force && $ctrl.posts) return $q.resolve(); // User is supplying the post collection rather than us fetching it - do nothing
 
 			$q.resolve()
 			// Pre loading phase {{{
@@ -100,7 +102,7 @@ angular.module('angular-ui-history', ['angular-bs-tooltip', 'ngQuill', 'ui.grava
 		};
 		// }}}
 
-		// .newPost - New post contents {{{
+		// .makePost - New post contents {{{
 		$ctrl.isPosting = false;
 
 		$ctrl.makePost = function (body) {
@@ -111,9 +113,12 @@ angular.module('angular-ui-history', ['angular-bs-tooltip', 'ngQuill', 'ui.grava
 
 			if (!resolvedUrl) throw new Error('Resovled POST URL is empty');
 
-			$ctrl.isPosting = true;
-			return $http.post(resolvedUrl, { body: body }).then(function () {
-				return $ctrl.refresh();
+			return $q.resolve().then(function () {
+				return $ctrl.isPosting = true;
+			}).then(function () {
+				return $http.post(resolvedUrl, { body: body });
+			}).then(function () {
+				return $ctrl.refresh(force = true);
 			}).then(function () {
 				return $rootScope.$broadcast('angular-ui-history.posted', body);
 			}).catch(function (error) {
@@ -200,7 +205,7 @@ angular.module('angular-ui-history', ['angular-bs-tooltip', 'ngQuill', 'ui.grava
 
 			// Watch the queryUrl - this fires initially to refresh everything but will also respond to changes by causing a refresh
 			$scope.$watch('$ctrl.queryUrl', function () {
-				return $ctrl.refresh();
+				return $ctrl.refresh(true);
 			});
 		};
 		// }}}

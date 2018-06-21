@@ -218,8 +218,8 @@ angular.module('angular-ui-history',[
 		* Load all posts (either via the queryUrl or from the posts array)
 		* @returns {Promise}
 		*/
-		$ctrl.refresh = ()=> {
-			if ($ctrl.posts) return $q.resolve(); // User is supplying the post collection rather than us fetching it - do nothing
+		$ctrl.refresh = (force = false) => {
+			if (!force && $ctrl.posts) return $q.resolve(); // User is supplying the post collection rather than us fetching it - do nothing
 
 			$q.resolve()
 				// Pre loading phase {{{
@@ -270,7 +270,7 @@ angular.module('angular-ui-history',[
 		}
 		// }}}
 
-		// .newPost - New post contents {{{
+		// .makePost - New post contents {{{
 		$ctrl.isPosting = false;
 
 		$ctrl.makePost = body => {
@@ -286,9 +286,10 @@ angular.module('angular-ui-history',[
 
 			if (!resolvedUrl) throw new Error('Resovled POST URL is empty');
 
-			$ctrl.isPosting = true;
-			return $http.post(resolvedUrl, {body})
-				.then(()=> $ctrl.refresh())
+			return $q.resolve()
+				.then(()=> $ctrl.isPosting = true)
+				.then(()=> $http.post(resolvedUrl, {body}))
+				.then(()=> $ctrl.refresh(force = true))
 				.then(()=> $rootScope.$broadcast('angular-ui-history.posted', body))
 				.catch(error => { if ($ctrl.onError) $ctrl.onError({error}) })
 				.finally(()=> $ctrl.isPosting = false);
@@ -359,7 +360,7 @@ angular.module('angular-ui-history',[
 			}
 
 			// Watch the queryUrl - this fires initially to refresh everything but will also respond to changes by causing a refresh
-			$scope.$watch('$ctrl.queryUrl', ()=> $ctrl.refresh());
+			$scope.$watch('$ctrl.queryUrl', ()=> $ctrl.refresh(true));
 		};
 		// }}}
 	},
