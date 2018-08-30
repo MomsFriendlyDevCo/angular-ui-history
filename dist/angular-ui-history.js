@@ -350,6 +350,112 @@ angular.module('angular-ui-history', ['angular-bs-tooltip', 'ngQuill', 'ui.grava
 })
 // }}}
 
+// uiHistoryLatest
+// Show the most recent history item
+// {{{
+.component('uiHistoryLatest', {
+	bindings: {
+		queryUrl: '<?',
+		onError: '&?',
+		onLoadingStart: '&?',
+		onLoadingStop: '&?',
+		onQuery: '&?'
+	},
+	template: '\n\t\t<div class="ui-history ui-history-latest">\n\t\t\t<div class="ui-history-item" ng-switch="$ctrl.post.type" ng-if="$ctrl.post">\n\t\t\t\t<div class="ui-history-meta">\n\t\t\t\t\t<a ng-href="{{$ctrl.post.user.url}}" target="_blank" class="ui-history-latest-user">\n\t\t\t\t\t\t{{$ctrl.post.user.name}}\n\t\t\t\t\t</a>\n\t\t\t\t\t<div class="ui-history-timestamp" >\n\t\t\t\t\t\t{{$ctrl.post.date ? ($ctrl.post.date | uiHistoryDate) : \'\'}}\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\n\t\t\t\t<!-- type=user.change {{{ -->\n\t\t\t\t<div ng-switch-when="user.change" class="ui-history-user-change">\n\t\t\t\t\t<div ng-if="$ctrl.post.field" class="ui-history-user-change-main">\n\t\t\t\t\t\t<a ng-href="{{$ctrl.post.user.url}}" target="_blank">\n\t\t\t\t\t\t\t{{$ctrl.post.user.name}}\n\t\t\t\t\t\t</a>\n\t\t\t\t\t\tChanged\n\t\t\t\t\t\t{{$ctrl.post.field}}\n\t\t\t\t\t\t<em>{{$ctrl.post.from}}</em>\n\t\t\t\t\t\t<i class="fa fa-long-arrow-right"></i>\n\t\t\t\t\t\t<em>{{$ctrl.post.to}}</em>\n\t\t\t\t\t</div>\n\t\t\t\t\t<div ng-if="$ctrl.post.fields" class="ui-history-user-change-main">\n\t\t\t\t\t\tChanges:\n\t\t\t\t\t\t<div ng-repeat="(field, change) in $ctrl.post.fields track by field">\n\t\t\t\t\t\t\t{{field}}\n\t\t\t\t\t\t\t<em>{{change.from}}</em>\n\t\t\t\t\t\t\t<i class="fa fa-long-arrow-right"></i>\n\t\t\t\t\t\t\t<em>{{change.to}}</em>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t\t<!-- }}} -->\n\n\t\t\t\t<!-- type=user.comment {{{ -->\n\t\t\t\t<div ng-switch-when="user.comment" class="ui-history-user-comment">\n\t\t\t\t\t<div class="ui-history-user-comment-main">\n\n\t\t\t\t\t\t<div ng-if="$ctrl.post.title" class="ui-history-user-comment-header">{{$ctrl.post.title}}</div>\n\t\t\t\t\t\t<div class="ui-history-user-comment-body" ng-bind-html="$ctrl.post.body"></div>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t\t<!-- }}} -->\n\n\t\t\t\t<!-- type=user.upload {{{ -->\n\t\t\t\t<div ng-switch-when="user.upload" class="ui-history-user-upload">\n\t\t\t\t\t<div class="ui-history-user-upload-main">\n\t\t\t\t\t\t<div style="margin-bottom: 10px"><a ng-href="{{$ctrl.post.user.url}}" target="_blank" >{{$ctrl.post.user.name}}</a> attached files:</div>\n\t\t\t\t\t\t<ul class="list-group">\n\t\t\t\t\t\t\t<a ng-if="$ctrl.post.filename" ng-href="{{$ctrl.post.url}}" target="_blank" class="list-group-item">\n\t\t\t\t\t\t\t\t<div ng-if="$ctrl.post.size" class="pull-right">{{$ctrl.post.size}}</div>\n\t\t\t\t\t\t\t\t<i ng-if="$ctrl.post.icon" class="{{$ctrl.post.icon}}"></i>\n\t\t\t\t\t\t\t\t{{$ctrl.post.filename || \'Unknown file\'}}\n\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t\t<a ng-if="$ctrl.post.files" ng-repeat="file in $ctrl.post.files track by file.filename" ng-href="{{file.url}}" target="_blank" class="list-group-item">\n\t\t\t\t\t\t\t\t<div ng-if="file.size" class="pull-right">{{file.size}}</div>\n\t\t\t\t\t\t\t\t<i ng-if="file.icon" class="{{file.icon}}"></i>\n\t\t\t\t\t\t\t\t{{file.filename || \'Unknown file\'}}\n\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t</ul>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t\t<!-- }}} -->\n\n\t\t\t\t<!-- type=user.status {{{ -->\n\t\t\t\t<div ng-switch-when="user.status" class="ui-history-user-status">\n\t\t\t\t\t<div class="ui-history-user-status-main" ng-bind-html="$ctrl.post.body"></div>\n\t\t\t\t</div>\n\t\t\t\t<!-- }}} -->\n\n\t\t\t\t<!-- type=system.change {{{ -->\n\t\t\t\t<div ng-switch-when="system.change" class="ui-history-system-change">\n\t\t\t\t\t<div ng-if="$ctrl.post.field">\n\t\t\t\t\t\tChanged\n\t\t\t\t\t\t{{$ctrl.post.field}}\n\t\t\t\t\t\t<em>{{$ctrl.post.from}}</em>\n\t\t\t\t\t\t<i class="fa fa-long-arrow-right"></i>\n\t\t\t\t\t\t<em>{{$ctrl.post.to}}</em>\n\t\t\t\t\t</div>\n\t\t\t\t\t<div ng-if="$ctrl.post.fields">\n\t\t\t\t\t\tChanges:\n\t\t\t\t\t\t<div ng-repeat="(field, change) in $ctrl.post.fields track by field">\n\t\t\t\t\t\t\t{{field}}\n\t\t\t\t\t\t\t<em>{{change.from}}</em>\n\t\t\t\t\t\t\t<i class="fa fa-long-arrow-right"></i>\n\t\t\t\t\t\t\t<em>{{change.to}}</em>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t\t<!-- }}} -->\n\n\t\t\t\t<!-- type=system.status {{{ -->\n\t\t\t\t<div ng-switch-when="system.status" class="ui-history-system-status" ng-bind-html="$ctrl.post.body"></div>\n\t\t\t\t<!-- }}} -->\n\n\t\t\t\t<!-- type unknown {{{ -->\n\t\t\t\t<div ng-switch-default class="ui-history-unknown">\n\t\t\t\t\tUnknown history type: [{{$ctrl.post.type}}]\n\t\t\t\t</div>\n\t\t\t\t<!-- }}} -->\n\t\t\t</div>\n\t\t</div>\n\t',
+	controller: ['$http', '$q', '$sce', '$scope', '$filter', function controller($http, $q, $sce, $scope, $filter) {
+		var $ctrl = this;
+
+		// Fetcher {{{
+		$ctrl.posts;
+		$ctrl.post; // Latest post
+		// }}}
+
+		/**
+  * Load all posts (either via the queryUrl or from the posts array)
+  * @returns {Promise}
+  */
+		$ctrl.refresh = function () {
+			var force = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
+			if (!force && $ctrl.posts) return $q.resolve(); // User is supplying the post collection rather than us fetching it - do nothing
+
+			$q.resolve()
+			// Pre loading phase {{{
+			.then(function () {
+				return $ctrl.isLoading = true;
+			}).then(function () {
+				if (angular.isFunction($ctrl.onLoadingStart)) return $ctrl.onLoadingStart();
+			})
+			// }}}
+			// Data fetching - either via queryUrl or examining posts {{{
+			.then(function () {
+				if (angular.isString($ctrl.queryUrl) || angular.isFunction($ctrl.queryUrl)) {
+					var resolvedUrl = angular.isString($ctrl.queryUrl) ? $ctrl.queryUrl : $ctrl.queryUrl($ctrl);
+					if (!resolvedUrl) throw new Error('Resovled URL is empty');
+					return $http.get(resolvedUrl).then(function (res) {
+						if (!angular.isArray(res.data)) {
+							throw new Error('Expected history feed at URL "' + resolvedUrl + '" to be an array but got something else');
+						} else {
+							return res.data;
+						}
+					}).catch(function (err) {
+						return console.log('err:', err);
+					});
+				} else if (angular.isArray($ctrl.posts)) {
+					return $ctrl.posts;
+				} else {
+					throw new Error('Cannot refresh posts - neither queryUrl (func / array) or posts (array) are specified');
+				}
+			})
+			// }}}
+			// Misc data mangling {{{
+			.then(function (data) {
+				$ctrl.posts = data;
+			})
+			// }}}
+			// If user has a onQuery handler wait for it to mangle / filter the data {{{
+			.then(function () {
+				if ($ctrl.onQuery) {
+					var res = $ctrl.onQuery({ posts: $ctrl.posts });
+					if (angular.isArray(res)) $ctrl.posts = res;
+				}
+			})
+			// }}}
+			// Most recent post
+			.then(function () {
+				$ctrl.posts = $filter('orderBy')($ctrl.posts, 'date', true);
+				$ctrl.post = $ctrl.posts[0];
+			})
+			// }}}
+			// Misc data mangling {{{
+			.then(function (data) {
+				var post = $ctrl.post;
+				if (post.body && (post.type == 'user.comment' || post.type == 'user.status' || post.type == 'system.status')) post.body = $sce.trustAsHtml(post.body);
+			})
+			// }}}
+			// Post loading + catchers {{{
+			.catch(function (error) {
+				if (angular.isFunction($ctrl.onError)) $ctrl.onError({ error: error });
+			}).finally(function () {
+				return $ctrl.isLoading = false;
+			}).finally(function () {
+				if (angular.isFunction($ctrl.onLoadingStop)) return $ctrl.onLoadingStop();
+			});
+			// }}}
+		};
+		// }}}
+
+		// Init {{{
+		$ctrl.$onInit = function () {
+			$scope.$watch('$ctrl.queryUrl', function () {
+				return $ctrl.refresh(true);
+			});
+		};
+		// }}}
+	}]
+})
+// }}}
+
 // uiHistoryDate (filter) {{{
 /**
 * Parse a date object into a human readable string

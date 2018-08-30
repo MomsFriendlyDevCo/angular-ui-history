@@ -589,6 +589,204 @@ angular.module('angular-ui-history',[
 })
 // }}}
 
+// uiHistoryLatest
+// Show the most recent history item
+// {{{
+.component('uiHistoryLatest', {
+	bindings: {
+		queryUrl: '<?',
+		onError: '&?',
+		onLoadingStart: '&?',
+		onLoadingStop: '&?',
+		onQuery: '&?',
+	},
+	template: `
+		<div class="ui-history ui-history-latest">
+			<div class="ui-history-item" ng-switch="$ctrl.post.type" ng-if="$ctrl.post">
+				<div class="ui-history-meta">
+					<a ng-href="{{$ctrl.post.user.url}}" target="_blank" class="ui-history-latest-user">
+						{{$ctrl.post.user.name}}
+					</a>
+					<div class="ui-history-timestamp" >
+						{{$ctrl.post.date ? ($ctrl.post.date | uiHistoryDate) : ''}}
+					</div>
+				</div>
+
+				<!-- type=user.change {{{ -->
+				<div ng-switch-when="user.change" class="ui-history-user-change">
+					<div ng-if="$ctrl.post.field" class="ui-history-user-change-main">
+						<a ng-href="{{$ctrl.post.user.url}}" target="_blank">
+							{{$ctrl.post.user.name}}
+						</a>
+						Changed
+						{{$ctrl.post.field}}
+						<em>{{$ctrl.post.from}}</em>
+						<i class="fa fa-long-arrow-right"></i>
+						<em>{{$ctrl.post.to}}</em>
+					</div>
+					<div ng-if="$ctrl.post.fields" class="ui-history-user-change-main">
+						Changes:
+						<div ng-repeat="(field, change) in $ctrl.post.fields track by field">
+							{{field}}
+							<em>{{change.from}}</em>
+							<i class="fa fa-long-arrow-right"></i>
+							<em>{{change.to}}</em>
+						</div>
+					</div>
+				</div>
+				<!-- }}} -->
+
+				<!-- type=user.comment {{{ -->
+				<div ng-switch-when="user.comment" class="ui-history-user-comment">
+					<div class="ui-history-user-comment-main">
+
+						<div ng-if="$ctrl.post.title" class="ui-history-user-comment-header">{{$ctrl.post.title}}</div>
+						<div class="ui-history-user-comment-body" ng-bind-html="$ctrl.post.body"></div>
+					</div>
+				</div>
+				<!-- }}} -->
+
+				<!-- type=user.upload {{{ -->
+				<div ng-switch-when="user.upload" class="ui-history-user-upload">
+					<div class="ui-history-user-upload-main">
+						<div style="margin-bottom: 10px"><a ng-href="{{$ctrl.post.user.url}}" target="_blank" >{{$ctrl.post.user.name}}</a> attached files:</div>
+						<ul class="list-group">
+							<a ng-if="$ctrl.post.filename" ng-href="{{$ctrl.post.url}}" target="_blank" class="list-group-item">
+								<div ng-if="$ctrl.post.size" class="pull-right">{{$ctrl.post.size}}</div>
+								<i ng-if="$ctrl.post.icon" class="{{$ctrl.post.icon}}"></i>
+								{{$ctrl.post.filename || 'Unknown file'}}
+							</a>
+							<a ng-if="$ctrl.post.files" ng-repeat="file in $ctrl.post.files track by file.filename" ng-href="{{file.url}}" target="_blank" class="list-group-item">
+								<div ng-if="file.size" class="pull-right">{{file.size}}</div>
+								<i ng-if="file.icon" class="{{file.icon}}"></i>
+								{{file.filename || 'Unknown file'}}
+							</a>
+						</ul>
+					</div>
+				</div>
+				<!-- }}} -->
+
+				<!-- type=user.status {{{ -->
+				<div ng-switch-when="user.status" class="ui-history-user-status">
+					<div class="ui-history-user-status-main" ng-bind-html="$ctrl.post.body"></div>
+				</div>
+				<!-- }}} -->
+
+				<!-- type=system.change {{{ -->
+				<div ng-switch-when="system.change" class="ui-history-system-change">
+					<div ng-if="$ctrl.post.field">
+						Changed
+						{{$ctrl.post.field}}
+						<em>{{$ctrl.post.from}}</em>
+						<i class="fa fa-long-arrow-right"></i>
+						<em>{{$ctrl.post.to}}</em>
+					</div>
+					<div ng-if="$ctrl.post.fields">
+						Changes:
+						<div ng-repeat="(field, change) in $ctrl.post.fields track by field">
+							{{field}}
+							<em>{{change.from}}</em>
+							<i class="fa fa-long-arrow-right"></i>
+							<em>{{change.to}}</em>
+						</div>
+					</div>
+				</div>
+				<!-- }}} -->
+
+				<!-- type=system.status {{{ -->
+				<div ng-switch-when="system.status" class="ui-history-system-status" ng-bind-html="$ctrl.post.body"></div>
+				<!-- }}} -->
+
+				<!-- type unknown {{{ -->
+				<div ng-switch-default class="ui-history-unknown">
+					Unknown history type: [{{$ctrl.post.type}}]
+				</div>
+				<!-- }}} -->
+			</div>
+		</div>
+	`,
+	controller: function($http, $q, $sce, $scope, $filter) {
+		var $ctrl = this;
+
+		// Fetcher {{{
+		$ctrl.posts;
+		$ctrl.post; // Latest post
+		// }}}
+
+		/**
+		* Load all posts (either via the queryUrl or from the posts array)
+		* @returns {Promise}
+		*/
+		$ctrl.refresh = (force = false) => {
+			if (!force && $ctrl.posts) return $q.resolve(); // User is supplying the post collection rather than us fetching it - do nothing
+
+			$q.resolve()
+				// Pre loading phase {{{
+				.then(()=> $ctrl.isLoading = true)
+				.then(()=> { if (angular.isFunction($ctrl.onLoadingStart)) return $ctrl.onLoadingStart() })
+					// }}}
+					// Data fetching - either via queryUrl or examining posts {{{
+				.then(()=> {
+					if (angular.isString($ctrl.queryUrl) || angular.isFunction($ctrl.queryUrl)) {
+						var resolvedUrl = angular.isString($ctrl.queryUrl) ? $ctrl.queryUrl : $ctrl.queryUrl($ctrl);
+						if (!resolvedUrl) throw new Error('Resovled URL is empty');
+						return $http.get(resolvedUrl)
+							.then(res => {
+								if (!angular.isArray(res.data)) {
+									throw new Error(`Expected history feed at URL "${resolvedUrl}" to be an array but got something else`);
+								} else {
+									return res.data;
+								}
+							}).catch(err => console.log('err:', err))
+					} else if (angular.isArray($ctrl.posts)) {
+						return $ctrl.posts;
+					} else {
+						throw new Error('Cannot refresh posts - neither queryUrl (func / array) or posts (array) are specified');
+					}
+				})
+				// }}}
+				// Misc data mangling {{{
+				.then(data => {
+					$ctrl.posts = data;
+				})
+				// }}}
+				// If user has a onQuery handler wait for it to mangle / filter the data {{{
+				.then(()=> {
+					if ($ctrl.onQuery) {
+						var res = $ctrl.onQuery({posts: $ctrl.posts});
+						if (angular.isArray(res)) $ctrl.posts = res;
+					}
+				})
+				// }}}
+				// Most recent post
+				.then(() => {
+					$ctrl.posts = $filter('orderBy')($ctrl.posts, 'date', true);
+					$ctrl.post = $ctrl.posts[0];
+				})
+				// }}}
+				// Misc data mangling {{{
+				.then(data => {
+					var post = $ctrl.post;
+					if (post.body && (post.type == 'user.comment' || post.type == 'user.status' || post.type == 'system.status')) post.body = $sce.trustAsHtml(post.body);
+				})
+				// }}}
+				// Post loading + catchers {{{
+				.catch(error => { if (angular.isFunction($ctrl.onError)) $ctrl.onError({error}) })
+				.finally(()=> $ctrl.isLoading = false)
+				.finally(()=> { if (angular.isFunction($ctrl.onLoadingStop)) return $ctrl.onLoadingStop(); })
+				// }}}
+		};
+		// }}}
+
+		// Init {{{
+		$ctrl.$onInit = () => {
+			$scope.$watch('$ctrl.queryUrl', ()=> $ctrl.refresh(true));
+		};
+		// }}}
+	}
+})
+// }}}
+
 // uiHistoryDate (filter) {{{
 /**
 * Parse a date object into a human readable string

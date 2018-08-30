@@ -222,7 +222,18 @@
 	border-radius: 4px;
 }
 /* }}} */
-
+/* Latest Post {{{*/
+.ui-history.ui-history-latest .ui-history-user-comment > .ui-history-user-comment-main::before,
+.ui-history.ui-history-latest .ui-history-user-comment > .ui-history-user-comment-main::after {
+	content: none;
+}
+.ui-history-latest-user {
+	color: #BBB;
+}
+.ui-history.ui-history-latest .ui-history-item {
+	border-bottom: none;
+}
+/* }}} */
 /* Print mode {{{ */
 @media print {
 	/* Hide interactive components when printing */
