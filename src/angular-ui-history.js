@@ -251,7 +251,7 @@ angular.module('angular-ui-history',[
 				// Misc data mangling {{{
 				.then(data => {
 					$ctrl.posts = data.map(post => {
-						if (post.body && (post.type == 'user.comment' || post.type == 'user.status' || post.type == 'system.status')) post.body = $sce.trustAsHtml(post.body);
+						if (typeof post.body === 'string' && (post.type == 'user.comment' || post.type == 'user.status' || post.type == 'system.status')) post.body = $sce.trustAsHtml(post.body);
 						return post;
 					});
 				})
@@ -767,7 +767,7 @@ angular.module('angular-ui-history',[
 				// Misc data mangling {{{
 				.then(data => {
 					var post = $ctrl.post;
-					if (post.body && (post.type == 'user.comment' || post.type == 'user.status' || post.type == 'system.status')) post.body = $sce.trustAsHtml(post.body);
+					if (typeof post.body === 'string' && (post.type == 'user.comment' || post.type == 'user.status' || post.type == 'system.status')) post.body = $sce.trustAsHtml(post.body);
 				})
 				// }}}
 				// Post loading + catchers {{{
