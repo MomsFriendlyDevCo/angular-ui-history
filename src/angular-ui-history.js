@@ -31,6 +31,7 @@ angular.module('angular-ui-history',[
 		onLoadingStop: '&?',
 		onQuery: '&?',
 		onUpload: '&?',
+		tags: '<?',
 	},
 	template: `
 		<div class="ui-history">
@@ -70,7 +71,8 @@ angular.module('angular-ui-history',[
 					<ui-history-editor
 						buttons="$ctrl.buttons"
 						templates="$ctrl.templates"
-						on-post="$ctrl.makePost(body)"
+						on-post="$ctrl.makePost(body, tags)"
+						tags="$ctrl.tags"
 					></ui-history-editor>
 				</div>
 				<hr/>
@@ -199,7 +201,7 @@ angular.module('angular-ui-history',[
 					<ui-history-editor
 						buttons="$ctrl.buttons"
 						templates="$ctrl.templates"
-						on-post="$ctrl.makePost(body)"
+						on-post="$ctrl.makePost(body, tags)"
 					></ui-history-editor>
 				</div>
 			</div>
@@ -249,7 +251,7 @@ angular.module('angular-ui-history',[
 				// Misc data mangling {{{
 				.then(data => {
 					$ctrl.posts = data.map(post => {
-						if (post.type == 'user.comment' || post.type == 'user.status' || post.type == 'system.status') post.body = $sce.trustAsHtml(post.body);
+						if (post.body && (post.type == 'user.comment' || post.type == 'user.status' || post.type == 'system.status')) post.body = $sce.trustAsHtml(post.body);
 						return post;
 					});
 				})
@@ -273,7 +275,7 @@ angular.module('angular-ui-history',[
 		// .makePost - New post contents {{{
 		$ctrl.isPosting = false;
 
-		$ctrl.makePost = body => {
+		$ctrl.makePost = (body, tags) => {
 			if (!$ctrl.allowPost) throw new Error('Posting not allowed');
 			if (!body) return; // Silently forget if the user is trying to publish empty contents
 
@@ -288,8 +290,8 @@ angular.module('angular-ui-history',[
 
 			return $q.resolve()
 				.then(()=> $ctrl.isPosting = true)
-				.then(()=> $http.post(resolvedUrl, {body}))
-				.then(()=> $ctrl.refresh(force = true))
+				.then(()=> $http.post(resolvedUrl, {body, tags}))
+				.then(()=> $ctrl.refresh(true))
 				.then(()=> $rootScope.$broadcast('angular-ui-history.posted', body))
 				.catch(error => { if ($ctrl.onError) $ctrl.onError({error}) })
 				.finally(()=> $ctrl.isPosting = false);
@@ -378,6 +380,7 @@ angular.module('angular-ui-history',[
 		buttons: '<',
 		templates: '<',
 		onPost: '&',
+		tags: '<?',
 	},
 	template: `
 		<form ng-submit="$ctrl.makePost()" class="form-horizontal">
@@ -465,9 +468,12 @@ angular.module('angular-ui-history',[
 		$ctrl.newPost = {body: ''};
 		$ctrl.makePost = ()=> {
 			if (!$ctrl.onPost) throw new Error('Post content provided but no onPost binding defined');
-			var ret = $ctrl.onPost({body: $ctrl.newPost.body});
+			var ret = $ctrl.onPost({body: $ctrl.newPost.body, tags: $ctrl.newPost.tags});
 			if (!ret) return; // Didn't return a promise - ignore
-			if (angular.isFunction(ret.then)) ret.then(()=> $ctrl.newPost = {body: ''});
+			if (angular.isFunction(ret.then)) ret.then(()=> {
+				$ctrl.newPost = {body: ''};
+				if ($ctrl.tags && $ctrl.tags.length) $ctrl.newPost.tags = $ctrl.tags.map(t => t);
+			});
 		};
 		$scope.$on('angular-ui-history.post', $ctrl.makePost);
 
@@ -491,6 +497,13 @@ angular.module('angular-ui-history',[
 			$ctrl.newPost.body = template.content;
 			$scope.$emit('angular-ui-history.template', template);
 		};
+
+		// Init {{{
+		$ctrl.$onInit = ()=> {
+			// Initialize tags to for new comments
+			if ($ctrl.tags && $ctrl.tags.length) $ctrl.newPost.tags = $ctrl.tags.map(t => t);
+		};
+		// }}}
 	},
 })
 // }}}

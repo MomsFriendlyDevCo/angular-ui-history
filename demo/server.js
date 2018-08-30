@@ -93,6 +93,7 @@ app.post('/history.json', multer().any(), function(req, res) {
 			},
 			type: 'user.comment',
 			body: req.body.body,
+			tags: req.body.tags,
 		});
 	}
 

@@ -9,7 +9,7 @@
 
 		<!-- Bootstrap -->
 		<link href="node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
-		<script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+		<script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
 		<!-- Angular -->
 		<script src="node_modules/angular/angular.min.js"></script>
@@ -51,6 +51,7 @@
 					{title: 'PICNIC', icon: 'fa fa-fw fa-user', content: 'Problem in chair not in computer'},
 				]"
 				on-query="filterQuery(posts)"
+				tags="['Tag4']"
 			></ui-history>
 
 			<div ng-if="isGitHub" class="alert alert-warning">
