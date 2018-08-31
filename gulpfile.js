@@ -51,7 +51,7 @@ gulp.task('js', ()=>
 		}))
 		.pipe(rename('angular-ui-history.js'))
 		.pipe(babel({
-			presets: ['es2015'],
+			presets: ['@babel/env'],
 			plugins: ['angularjs-annotate'],
 		}))
 		.pipe(gulp.dest('./dist'))
