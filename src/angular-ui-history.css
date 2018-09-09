@@ -233,6 +233,10 @@
 .ui-history.ui-history-latest .ui-history-item {
 	border-bottom: none;
 }
+.ui-history.ui-history-latest .ui-history-item .ui-history-meta {
+	text-align: right;
+	color: #BBB;
+}
 /* }}} */
 /* Print mode {{{ */
 @media print {

@@ -605,10 +605,13 @@ angular.module('angular-ui-history',[
 			<div class="ui-history-item" ng-switch="$ctrl.post.type" ng-if="$ctrl.post">
 				<div class="ui-history-meta">
 					<a ng-href="{{$ctrl.post.user.url}}" target="_blank" class="ui-history-latest-user">
-						{{$ctrl.post.user.name}}
+						{{$ctrl.post.user.name}}{{$ctrl.post.date ? ',' : ''}}
 					</a>
 					<div class="ui-history-timestamp" >
 						{{$ctrl.post.date ? ($ctrl.post.date | uiHistoryDate) : ''}}
+					</div>
+					<div ng-if="$ctrl.post.user.company">
+						{{$ctrl.post.user.company}}
 					</div>
 				</div>
 
