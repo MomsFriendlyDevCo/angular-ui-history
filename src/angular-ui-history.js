@@ -32,6 +32,7 @@ angular.module('angular-ui-history',[
 		onQuery: '&?',
 		onUpload: '&?',
 		tags: '<?',
+		userAvatar: '@?',
 	},
 	template: `
 		<div class="ui-history">
@@ -92,9 +93,7 @@ angular.module('angular-ui-history',[
 				<!-- type=user.change {{{ -->
 				<div ng-switch-when="user.change" class="ui-history-user-change">
 					<div class="ui-history-user-change-user">
-						<a ng-href="{{post.user.url}}" target="_blank">
-							<img gravatar-src="post.user.email" gravatar-size="50" gravatar-default="monsterid" tooltip="{{post.user.name}}"/>
-						</a>
+						<user-history-avatar user="post.user" user-avatar="{{$ctrl.userAvatar}}"></user-history-avatar>
 					</div>
 					<div ng-if="post.field" class="ui-history-user-change-main">
 						Changed
@@ -117,9 +116,7 @@ angular.module('angular-ui-history',[
 				<!-- type=user.comment {{{ -->
 				<div ng-switch-when="user.comment" class="ui-history-user-comment">
 					<div class="ui-history-user-comment-user">
-						<a ng-href="{{post.user.url}}" target="_blank">
-							<img gravatar-src="post.user.email" gravatar-size="50" gravatar-default="monsterid" tooltip="{{post.user.name}}"/>
-						</a>
+						<user-history-avatar user="post.user" user-avatar="{{$ctrl.userAvatar}}"></user-history-avatar>
 					</div>
 					<div class="ui-history-user-comment-main">
 						<div ng-if="post.title" class="ui-history-user-comment-header">{{post.title}}</div>
@@ -130,9 +127,7 @@ angular.module('angular-ui-history',[
 				<!-- type=user.upload {{{ -->
 				<div ng-switch-when="user.upload" class="ui-history-user-upload">
 					<div class="ui-history-user-upload-user">
-						<a ng-href="{{post.user.url}}" target="_blank">
-							<img gravatar-src="post.user.email" gravatar-size="50" gravatar-default="monsterid" tooltip="{{post.user.name}}"/>
-						</a>
+						<user-history-avatar user="post.user" user-avatar="{{$ctrl.userAvatar}}"></user-history-avatar>
 					</div>
 					<div class="ui-history-user-upload-main">
 						<div style="margin-bottom: 10px">Attached files:</div>
@@ -154,9 +149,7 @@ angular.module('angular-ui-history',[
 				<!-- type=user.status {{{ -->
 				<div ng-switch-when="user.status" class="ui-history-user-status">
 					<div class="ui-history-user-status-user">
-						<a ng-href="{{post.user.url}}" target="_blank">
-							<img gravatar-src="post.user.email" gravatar-size="50" gravatar-default="monsterid" tooltip="{{post.user.name}}"/>
-						</a>
+						<user-history-avatar user="post.user" user-avatar="{{$ctrl.userAvatar}}"></user-history-avatar>
 					</div>
 					<div class="ui-history-user-status-main" ng-bind-html="post.body"></div>
 				</div>
@@ -787,6 +780,27 @@ angular.module('angular-ui-history',[
 		};
 		// }}}
 	}
+})
+// }}}
+
+// uiHistoryAvatar
+/**
+* User avatar
+* @param {Object} user Post author
+* @param {string} [userAvatar] Template to use as the avatar for the user
+*/
+// {{{
+.component('userHistoryAvatar', {
+	bindings: {
+		user: '<',
+		userAvatar: '@?',
+	},
+	template: `
+		<div ng-if="$ctrl.userAvatar" ng-include="$ctrl.userAvatar"></div>
+		<a ng-if="!$ctrl.userAvatar" ng-href="{{user.url}}" target="_blank">
+			<img gravatar-src="user.email" gravatar-size="50" gravatar-default="monsterid" tooltip="{{user.name}}"/>
+		</a>
+	`,
 })
 // }}}
 
