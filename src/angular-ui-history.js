@@ -119,6 +119,9 @@ angular.module('angular-ui-history',[
 						<user-history-avatar user="post.user" user-avatar="{{$ctrl.userAvatar}}"></user-history-avatar>
 					</div>
 					<div class="ui-history-user-comment-main">
+						<div ng-if="post.user.company" class="ui-history-company">
+							{{post.user.company}}
+						</div>
 						<div ng-if="post.title" class="ui-history-user-comment-header">{{post.title}}</div>
 						<div class="ui-history-user-comment-body" ng-bind-html="post.body"></div>
 					</div>
@@ -608,9 +611,6 @@ angular.module('angular-ui-history',[
 					<div class="ui-history-timestamp" >
 						{{$ctrl.post.date ? ($ctrl.post.date | uiHistoryDate) : ''}}
 					</div>
-					<div ng-if="$ctrl.post.user.company">
-						{{$ctrl.post.user.company}}
-					</div>
 				</div>
 
 				<!-- type=user.change {{{ -->
@@ -639,8 +639,10 @@ angular.module('angular-ui-history',[
 
 				<!-- type=user.comment {{{ -->
 				<div ng-switch-when="user.comment" class="ui-history-user-comment">
+					<div ng-if="$ctrl.post.user.company" class="ui-history-company">
+						{{$ctrl.post.user.company}}
+					</div>
 					<div class="ui-history-user-comment-main">
-
 						<div ng-if="$ctrl.post.title" class="ui-history-user-comment-header">{{$ctrl.post.title}}</div>
 						<div class="ui-history-user-comment-body" ng-bind-html="$ctrl.post.body"></div>
 					</div>

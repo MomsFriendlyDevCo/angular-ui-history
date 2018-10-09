@@ -72,6 +72,11 @@
 	height: 250px;
 }
 
+.ui-history-company {
+	margin: 3px 15px;
+	color: #BBB;
+}
+
 /* type=user.comment {{{ */
 .ui-history .ui-history-user-comment {
 	position: relative;
