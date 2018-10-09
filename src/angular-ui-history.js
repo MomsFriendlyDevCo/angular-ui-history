@@ -308,6 +308,11 @@ angular.module('angular-ui-history',[
 				var formData = new FormData();
 				Object.keys(this.files).forEach((k, i) => formData.append('file_' + i, this.files[k]));
 
+				// Tag files
+				if ($ctrl.tags && $ctrl.tags.length) {
+					$ctrl.tags.forEach(tag => formData.append('tags[]', tag));
+				}
+
 				$ctrl.isUploading = true;
 				$http.post(resolvedUrl, formData, {
 					headers: {'Content-Type': undefined}, // Need to override the headers so that angular changes them over into multipart/mime
