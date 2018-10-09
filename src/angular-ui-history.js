@@ -79,7 +79,7 @@ angular.module('angular-ui-history',[
 				<hr/>
 			</div>
 			<!-- }}} -->
-			<div ng-repeat="post in $ctrl.posts | orderBy:'date':$ctrl.display=='recentFirst' track by post._id" ng-switch="post.type" class="ui-history-item">
+			<div ng-repeat="post in $ctrl.posts | orderBy:'date':$ctrl.display=='recentFirst' track by (post.date + post._id)" ng-switch="post.type" class="ui-history-item">
 				<div class="ui-history-meta">
 					<div ng-if="post.tags && post.tags.length" class="ui-history-tags">
 						<span ng-repeat="tag in post.tags" class="ui-history-tag">
@@ -797,8 +797,8 @@ angular.module('angular-ui-history',[
 	},
 	template: `
 		<div ng-if="$ctrl.userAvatar" ng-include="$ctrl.userAvatar"></div>
-		<a ng-if="!$ctrl.userAvatar" ng-href="{{user.url}}" target="_blank">
-			<img gravatar-src="user.email" gravatar-size="50" gravatar-default="monsterid" tooltip="{{user.name}}"/>
+		<a ng-if="!$ctrl.userAvatar" ng-href="{{$ctrl.user.url}}" target="_blank">
+			<img gravatar-src="$ctrl.user.email" gravatar-size="50" gravatar-default="monsterid" tooltip="{{$ctrl.user.name}}"/>
 		</a>
 	`,
 })
