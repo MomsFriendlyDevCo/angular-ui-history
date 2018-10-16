@@ -72,6 +72,11 @@
 	height: 250px;
 }
 
+.ui-history-company {
+	margin: 3px 15px;
+	color: #BBB;
+}
+
 /* type=user.comment {{{ */
 .ui-history .ui-history-user-comment {
 	position: relative;
@@ -232,6 +237,10 @@
 }
 .ui-history.ui-history-latest .ui-history-item {
 	border-bottom: none;
+}
+.ui-history.ui-history-latest .ui-history-item .ui-history-meta {
+	text-align: right;
+	color: #BBB;
 }
 /* }}} */
 /* Print mode {{{ */
