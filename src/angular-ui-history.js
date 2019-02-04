@@ -93,7 +93,7 @@ angular.module('angular-ui-history',[
 				<!-- type=user.change {{{ -->
 				<div ng-switch-when="user.change" class="ui-history-user-change">
 					<div class="ui-history-user-change-user">
-						<user-history-avatar user="post.user" user-avatar="{{$ctrl.userAvatar}}"></user-history-avatar>
+						<user-history-avatar user="post.user" user-avatar="{{$ctrl.userAvatar}}" default-image="{{$ctrl.gravatarDefault}}"></user-history-avatar>
 					</div>
 					<div ng-if="post.field" class="ui-history-user-change-main">
 						Changed
@@ -116,7 +116,7 @@ angular.module('angular-ui-history',[
 				<!-- type=user.comment {{{ -->
 				<div ng-switch-when="user.comment" class="ui-history-user-comment">
 					<div class="ui-history-user-comment-user">
-						<user-history-avatar user="post.user" user-avatar="{{$ctrl.userAvatar}}"></user-history-avatar>
+						<user-history-avatar user="post.user" user-avatar="{{$ctrl.userAvatar}}" default-image="{{$ctrl.gravatarDefault}}"></user-history-avatar>
 					</div>
 					<div class="ui-history-user-comment-main">
 						<div ng-if="post.user.company" class="ui-history-company">
@@ -130,7 +130,7 @@ angular.module('angular-ui-history',[
 				<!-- type=user.upload {{{ -->
 				<div ng-switch-when="user.upload" class="ui-history-user-upload">
 					<div class="ui-history-user-upload-user">
-						<user-history-avatar user="post.user" user-avatar="{{$ctrl.userAvatar}}"></user-history-avatar>
+						<user-history-avatar user="post.user" user-avatar="{{$ctrl.userAvatar}}" default-image="{{$ctrl.gravatarDefault}}"></user-history-avatar>
 					</div>
 					<div class="ui-history-user-upload-main">
 						<div style="margin-bottom: 10px">Attached files:</div>
@@ -152,7 +152,7 @@ angular.module('angular-ui-history',[
 				<!-- type=user.status {{{ -->
 				<div ng-switch-when="user.status" class="ui-history-user-status">
 					<div class="ui-history-user-status-user">
-						<user-history-avatar user="post.user" user-avatar="{{$ctrl.userAvatar}}"></user-history-avatar>
+						<user-history-avatar user="post.user" user-avatar="{{$ctrl.userAvatar}}" default-image="{{$ctrl.gravatarDefault}}"></user-history-avatar>
 					</div>
 					<div class="ui-history-user-status-main" ng-bind-html="post.body"></div>
 				</div>
@@ -801,11 +801,12 @@ angular.module('angular-ui-history',[
 	bindings: {
 		user: '<',
 		userAvatar: '@?',
+		defaultImage: '@?'
 	},
 	template: `
 		<div ng-if="$ctrl.userAvatar" ng-include="$ctrl.userAvatar"></div>
 		<a ng-if="!$ctrl.userAvatar" ng-href="{{$ctrl.user.url}}" target="_blank">
-			<img gravatar-src="$ctrl.user.email" gravatar-size="50" gravatar-default="monsterid" tooltip="{{$ctrl.user.name}}"/>
+			<img gravatar-src="$ctrl.user.email" gravatar-size="50" gravatar-default="{{$ctrl.defaultImage || 'monsterid'}}" tooltip="{{$ctrl.user.name}}"/>
 		</a>
 	`,
 })
