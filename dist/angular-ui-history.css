@@ -24,6 +24,21 @@
 	z-index: 100;
 }
 
+.ui-history .ui-history-item .ui-history-delete-post {
+	display:inline-block;
+	margin-right: 10px;
+	cursor: pointer;
+	visibility: hidden;
+}
+
+.ui-history .ui-history-item:hover .ui-history-delete-post{
+	visibility: visible;
+}
+
+.ui-history .ui-history-item .ui-history-delete-post i {
+	line-height: 24px;
+}
+
 .ui-history .ui-history-item .ui-history-timestamp {
 	display: inline-block;
 	color: #BBB;
