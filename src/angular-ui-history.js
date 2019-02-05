@@ -18,6 +18,7 @@ angular.module('angular-ui-history',[
 .component('uiHistory', {
 	bindings: {
 		allowPost: '<?',
+		allowDelete: '<?',
 		allowUpload: '<?',
 		allowUploadList: '<?',
 		buttons: '<?',
@@ -25,6 +26,7 @@ angular.module('angular-ui-history',[
 		posts: '<?',
 		queryUrl: '<?',
 		postUrl: '<?',
+		deleteUrl: '<?',
 		templates: '<?',
 		onError: '&?',
 		onLoadingStart: '&?',
@@ -81,6 +83,7 @@ angular.module('angular-ui-history',[
 			<!-- }}} -->
 			<div ng-repeat="post in $ctrl.posts | orderBy:'date':$ctrl.display=='recentFirst' track by (post.date + post._id)" ng-switch="post.type" class="ui-history-item">
 				<div class="ui-history-meta">
+					<div ng-if="$ctrl.allowDelete" class="ui-history-delete-post" tooltip="Delete" ng-click="$ctrl.deletePost(post._id)"><i class="fa fa-trash-o" aria-hidden="true"></i></div>
 					<div ng-if="post.tags && post.tags.length" class="ui-history-tags">
 						<span ng-repeat="tag in post.tags" class="ui-history-tag">
 							{{tag}}
@@ -282,7 +285,7 @@ angular.module('angular-ui-history',[
 				angular.isFunction($ctrl.queryUrl) ? $ctrl.queryUrl($ctrl) :
 				undefined;
 
-			if (!resolvedUrl) throw new Error('Resovled POST URL is empty');
+			if (!resolvedUrl) throw new Error('Resolved POST URL is empty');
 
 			return $q.resolve()
 				.then(()=> $ctrl.isPosting = true)
@@ -292,6 +295,30 @@ angular.module('angular-ui-history',[
 				.catch(error => { if ($ctrl.onError) $ctrl.onError({error}) })
 				.finally(()=> $ctrl.isPosting = false);
 		};
+		// }}}
+
+		// Delete posts {{{
+		$ctrl.isDeleting = false;
+
+		$ctrl.deletePost = (id) => {
+			if (!$ctrl.allowDelete) throw new Error('Deleting not allowed');
+			if (!id) return;
+
+			var resolvedUrl =
+				angular.isString($ctrl.deleteUrl) ? $ctrl.deleteUrl :
+				angular.isFunction($ctrl.deleteUrl) ? $ctrl.deleteUrl($ctrl) :
+				undefined;
+
+			if (!resolvedUrl) throw new Error('Resolved DELETE URL is empty');
+
+			return $q.resolve()
+				.then(()=> $ctrl.isDeleting = true)
+				.then(()=> $http.delete(`${resolvedUrl}/${id}`))
+				.then(()=> $ctrl.refresh(true))
+				.then(()=> $rootScope.$broadcast('angular-ui-history.deleted', id))
+				.catch(error => { if ($ctrl.onError) $ctrl.onError({error}) })
+				.finally(()=> $ctrl.isDeleting = false);
+		}
 		// }}}
 
 		// Uploads {{{
@@ -387,7 +414,7 @@ angular.module('angular-ui-history',[
 		<form ng-submit="$ctrl.makePost()" class="form-horizontal">
 			<div class="form-group">
 				<div class="col-sm-12">
-					<ng-quill-editor ng-model="$ctrl.newPost.body" placeholder="Leave a comment...">
+					<ng-quill-editor ng-model="$ctrl.newPost.body">
 						<!-- ng-quill toolbar config {{{ -->
 						<ng-quill-toolbar>
 							<div>
