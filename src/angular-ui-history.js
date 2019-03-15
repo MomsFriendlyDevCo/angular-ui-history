@@ -18,6 +18,7 @@ angular.module('angular-ui-history',[
 .component('uiHistory', {
 	bindings: {
 		allowPost: '<?',
+		allowDelete: '<?',
 		allowUpload: '<?',
 		allowUploadList: '<?',
 		buttons: '<?',
@@ -25,6 +26,7 @@ angular.module('angular-ui-history',[
 		posts: '<?',
 		queryUrl: '<?',
 		postUrl: '<?',
+		deleteUrl: '<?',
 		templates: '<?',
 		onError: '&?',
 		onLoadingStart: '&?',
@@ -35,6 +37,7 @@ angular.module('angular-ui-history',[
 		onUploadProgress: '&?',
 		onUploadEnd: '&?',
 		tags: '<?',
+		userAvatar: '@?',
 	},
 	template: `
 		<div class="ui-history">
@@ -81,9 +84,9 @@ angular.module('angular-ui-history',[
 				<hr/>
 			</div>
 			<!-- }}} -->
-			<div ng-repeat="post in $ctrl.posts | orderBy:'date':$ctrl.display=='recentFirst' track by post._id" ng-switch="post.type" class="ui-history-item">
-				<user-avatar>{{post.user.name}}</user-avatar>
+			<div ng-repeat="post in $ctrl.posts | orderBy:'date':$ctrl.display=='recentFirst' track by (post.date + post._id)" ng-switch="post.type" class="ui-history-item">
 				<div class="ui-history-meta">
+					<div ng-if="$ctrl.allowDelete" class="ui-history-delete-post" tooltip="Delete" ng-click="$ctrl.deletePost(post._id)"><i class="fa fa-trash-o" aria-hidden="true"></i></div>
 					<div ng-if="post.tags && post.tags.length" class="ui-history-tags">
 						<span ng-repeat="tag in post.tags" class="ui-history-tag">
 							{{tag}}
@@ -96,9 +99,7 @@ angular.module('angular-ui-history',[
 				<!-- type=user.change {{{ -->
 				<div ng-switch-when="user.change" class="ui-history-user-change">
 					<div class="ui-history-user-change-user">
-						<a ng-href="{{post.user.url}}" target="_blank">
-							<img gravatar-src="post.user.email" gravatar-size="50" gravatar-default="monsterid" tooltip="{{post.user.name}}"/>
-						</a>
+						<user-history-avatar user="post.user" user-avatar="{{$ctrl.userAvatar}}" default-image="{{$ctrl.gravatarDefault}}"></user-history-avatar>
 					</div>
 					<div ng-if="post.field" class="ui-history-user-change-main">
 						Changed
@@ -121,11 +122,12 @@ angular.module('angular-ui-history',[
 				<!-- type=user.comment {{{ -->
 				<div ng-switch-when="user.comment" class="ui-history-user-comment">
 					<div class="ui-history-user-comment-user">
-						<a ng-href="{{post.user.url}}" target="_blank">
-							<img gravatar-src="post.user.email" gravatar-size="50" gravatar-default="monsterid" tooltip="{{post.user.name}}"/>
-						</a>
+						<user-history-avatar user="post.user" user-avatar="{{$ctrl.userAvatar}}" default-image="{{$ctrl.gravatarDefault}}"></user-history-avatar>
 					</div>
 					<div class="ui-history-user-comment-main">
+						<div ng-if="post.user.company" class="ui-history-company">
+							{{post.user.company}}
+						</div>
 						<div ng-if="post.title" class="ui-history-user-comment-header">{{post.title}}</div>
 						<div class="ui-history-user-comment-body" ng-bind-html="post.body"></div>
 					</div>
@@ -134,9 +136,7 @@ angular.module('angular-ui-history',[
 				<!-- type=user.upload {{{ -->
 				<div ng-switch-when="user.upload" class="ui-history-user-upload">
 					<div class="ui-history-user-upload-user">
-						<a ng-href="{{post.user.url}}" target="_blank">
-							<img gravatar-src="post.user.email" gravatar-size="50" gravatar-default="monsterid" tooltip="{{post.user.name}}"/>
-						</a>
+						<user-history-avatar user="post.user" user-avatar="{{$ctrl.userAvatar}}" default-image="{{$ctrl.gravatarDefault}}"></user-history-avatar>
 					</div>
 					<div class="ui-history-user-upload-main">
 						<div style="margin-bottom: 10px">Attached files:</div>
@@ -158,9 +158,7 @@ angular.module('angular-ui-history',[
 				<!-- type=user.status {{{ -->
 				<div ng-switch-when="user.status" class="ui-history-user-status">
 					<div class="ui-history-user-status-user">
-						<a ng-href="{{post.user.url}}" target="_blank">
-							<img gravatar-src="post.user.email" gravatar-size="50" gravatar-default="monsterid" tooltip="{{post.user.name}}"/>
-						</a>
+						<user-history-avatar user="post.user" user-avatar="{{$ctrl.userAvatar}}" default-image="{{$ctrl.gravatarDefault}}"></user-history-avatar>
 					</div>
 					<div class="ui-history-user-status-main" ng-bind-html="post.body"></div>
 				</div>
@@ -291,7 +289,7 @@ angular.module('angular-ui-history',[
 				angular.isFunction($ctrl.queryUrl) ? $ctrl.queryUrl($ctrl) :
 				undefined;
 
-			if (!resolvedUrl) throw new Error('Resovled POST URL is empty');
+			if (!resolvedUrl) throw new Error('Resolved POST URL is empty');
 
 			return $q.resolve()
 				.then(()=> $ctrl.isPosting = true)
@@ -301,6 +299,30 @@ angular.module('angular-ui-history',[
 				.catch(error => { if ($ctrl.onError) $ctrl.onError({error}) })
 				.finally(()=> $ctrl.isPosting = false);
 		};
+		// }}}
+
+		// Delete posts {{{
+		$ctrl.isDeleting = false;
+
+		$ctrl.deletePost = (id) => {
+			if (!$ctrl.allowDelete) throw new Error('Deleting not allowed');
+			if (!id) return;
+
+			var resolvedUrl =
+				angular.isString($ctrl.deleteUrl) ? $ctrl.deleteUrl :
+				angular.isFunction($ctrl.deleteUrl) ? $ctrl.deleteUrl($ctrl) :
+				undefined;
+
+			if (!resolvedUrl) throw new Error('Resolved DELETE URL is empty');
+
+			return $q.resolve()
+				.then(()=> $ctrl.isDeleting = true)
+				.then(()=> $http.delete(`${resolvedUrl}/${id}`))
+				.then(()=> $ctrl.refresh(true))
+				.then(()=> $rootScope.$broadcast('angular-ui-history.deleted', id))
+				.catch(error => { if ($ctrl.onError) $ctrl.onError({error}) })
+				.finally(()=> $ctrl.isDeleting = false);
+		}
 		// }}}
 
 		// Uploads {{{
@@ -319,6 +341,11 @@ angular.module('angular-ui-history',[
 
 				var formData = new FormData();
 				Object.keys(this.files).forEach((k, i) => formData.append('file_' + i, this.files[k]));
+
+				// Tag files
+				if ($ctrl.tags && $ctrl.tags.length) {
+					$ctrl.tags.forEach(tag => formData.append('tags[]', tag));
+				}
 
 				$ctrl.isUploading = true;
 				Promise.resolve()
@@ -403,7 +430,7 @@ angular.module('angular-ui-history',[
 		<form ng-submit="$ctrl.makePost()" class="form-horizontal">
 			<div class="form-group">
 				<div class="col-sm-12">
-					<ng-quill-editor ng-model="$ctrl.newPost.body" placeholder="Leave a comment...">
+					<ng-quill-editor ng-model="$ctrl.newPost.body">
 						<!-- ng-quill toolbar config {{{ -->
 						<ng-quill-toolbar>
 							<div>
@@ -622,7 +649,7 @@ angular.module('angular-ui-history',[
 			<div class="ui-history-item" ng-switch="$ctrl.post.type" ng-if="$ctrl.post">
 				<div class="ui-history-meta">
 					<a ng-href="{{$ctrl.post.user.url}}" target="_blank" class="ui-history-latest-user">
-						{{$ctrl.post.user.name}}
+						{{$ctrl.post.user.name}}{{$ctrl.post.date ? ',' : ''}}
 					</a>
 					<div class="ui-history-timestamp" >
 						{{$ctrl.post.date ? ($ctrl.post.date | uiHistoryDate) : ''}}
@@ -655,8 +682,10 @@ angular.module('angular-ui-history',[
 
 				<!-- type=user.comment {{{ -->
 				<div ng-switch-when="user.comment" class="ui-history-user-comment">
+					<div ng-if="$ctrl.post.user.company" class="ui-history-company">
+						{{$ctrl.post.user.company}}
+					</div>
 					<div class="ui-history-user-comment-main">
-
 						<div ng-if="$ctrl.post.title" class="ui-history-user-comment-header">{{$ctrl.post.title}}</div>
 						<div class="ui-history-user-comment-body" ng-bind-html="$ctrl.post.body"></div>
 					</div>
@@ -801,6 +830,28 @@ angular.module('angular-ui-history',[
 		};
 		// }}}
 	}
+})
+// }}}
+
+// uiHistoryAvatar
+/**
+* User avatar
+* @param {Object} user Post author
+* @param {string} [userAvatar] Template to use as the avatar for the user
+*/
+// {{{
+.component('userHistoryAvatar', {
+	bindings: {
+		user: '<',
+		userAvatar: '@?',
+		defaultImage: '@?'
+	},
+	template: `
+		<div ng-if="$ctrl.userAvatar" ng-include="$ctrl.userAvatar"></div>
+		<a ng-if="!$ctrl.userAvatar" ng-href="{{$ctrl.user.url}}" target="_blank">
+			<img gravatar-src="$ctrl.user.email" gravatar-size="50" gravatar-default="{{$ctrl.defaultImage || 'monsterid'}}" tooltip="{{$ctrl.user.name}}"/>
+		</a>
+	`,
 })
 // }}}
 
