@@ -272,7 +272,7 @@ angular.module('angular-ui-history',[
 				.finally(()=> { if (angular.isFunction($ctrl.onLoadingStop)) return $ctrl.onLoadingStop(); })
 				// }}}
 		}
-		$scope.$on('angular-ui-history.refresh', ()=> $ctrl.refresh());
+		$scope.$on('angular-ui-history.refresh', ()=> $ctrl.refresh(true));
 		// }}}
 
 		// .makePost - New post contents {{{

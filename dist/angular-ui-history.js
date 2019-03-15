@@ -101,7 +101,7 @@ angular.module('angular-ui-history', ['angular-bs-tooltip', 'ngQuill', 'ui.grava
     };
 
     $scope.$on('angular-ui-history.refresh', function () {
-      return $ctrl.refresh();
+      return $ctrl.refresh(true);
     }); // }}}
     // .makePost - New post contents {{{
 
