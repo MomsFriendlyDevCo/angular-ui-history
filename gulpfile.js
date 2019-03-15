@@ -15,6 +15,9 @@ gulp.task('default', ['serve']);
 gulp.task('build', ['js', 'css']);
 
 
+/**
+* Create a Nodemon monitored server and serve the demo project
+*/
 gulp.task('serve', ['build'], function() {
 	var monitor = nodemon({
 		script: './demo/server.js',
@@ -40,6 +43,9 @@ gulp.task('serve', ['build'], function() {
 });
 
 
+/**
+* Compile all JS files (including minified varients)
+*/
 gulp.task('js', ()=>
 	gulp.src('./src/angular-ui-history.js')
 		.pipe(plumber({

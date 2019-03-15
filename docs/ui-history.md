@@ -40,6 +40,9 @@ Directive Settings
 | `onError`         | `function`             | `undefined`     | How to catch error messages from any of the interfaces. Called as `({error})`                                   |
 | `onLoadingStart`  | `function`             | `undefined`     | Function / Promise to resolve when a loading action begins (fetching posts, uploads etc.)                       |
 | `onLoadingStop`   | `function`             | `undefined`     | Function / Promise to resolve fire when a loading action copletes                                               |
+| `onUploadStart`   | `function`             | `undefined`     | Function called when an upload begins. Called as `({files})`                                                    |
+| `onUploadProgress` | `function`             | `undefined`     | Function called when an upload is in progress. Called as `({files, progress})`                                 |
+| `onUploadEnd`     | `function`             | `undefined`     | Function called when an upload finishes. Called as `({files})`                                                  |
 | `onQuery`         | `function`             | `undefined`     | A pre-query rendering hook after the data has been retrieved from the server. If this function returns an array its contents will be used as the post content. This can be useful as a filter / mangling service |
 | `onUpload`        | `function`             | `undefined`     | Event fired when a file upload is successful. Called as `({serverResponse})`                                    |
 
@@ -67,6 +70,7 @@ Events (Broadcastable)
 | Event                             | Arguments    | Description                                                  |
 |-----------------------------------|--------------|--------------------------------------------------------------|
 | `angular-ui-history.post`         |              | Attempt to post a non-blank comment (if any)                 |
+| `angular-ui-history.refresh`      |              | Instructs all UI-history elements who recieve it to repull their data |
 
 
 History Items

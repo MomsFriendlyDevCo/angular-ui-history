@@ -31,6 +31,9 @@ angular.module('angular-ui-history',[
 		onLoadingStop: '&?',
 		onQuery: '&?',
 		onUpload: '&?',
+		onUploadStart: '&?',
+		onUploadProgress: '&?',
+		onUploadEnd: '&?',
 		tags: '<?',
 	},
 	template: `
@@ -79,6 +82,7 @@ angular.module('angular-ui-history',[
 			</div>
 			<!-- }}} -->
 			<div ng-repeat="post in $ctrl.posts | orderBy:'date':$ctrl.display=='recentFirst' track by post._id" ng-switch="post.type" class="ui-history-item">
+				<user-avatar>{{post.user.name}}</user-avatar>
 				<div class="ui-history-meta">
 					<div ng-if="post.tags && post.tags.length" class="ui-history-tags">
 						<span ng-repeat="tag in post.tags" class="ui-history-tag">
@@ -270,6 +274,7 @@ angular.module('angular-ui-history',[
 				.finally(()=> { if (angular.isFunction($ctrl.onLoadingStop)) return $ctrl.onLoadingStop(); })
 				// }}}
 		}
+		$scope.$on('angular-ui-history.refresh', ()=> $ctrl.refresh());
 		// }}}
 
 		// .makePost - New post contents {{{
@@ -316,11 +321,23 @@ angular.module('angular-ui-history',[
 				Object.keys(this.files).forEach((k, i) => formData.append('file_' + i, this.files[k]));
 
 				$ctrl.isUploading = true;
-				$http.post(resolvedUrl, formData, {
-					headers: {'Content-Type': undefined}, // Need to override the headers so that angular changes them over into multipart/mime
-					transformRequest: angular.identity,
-				})
-					.then(res => { if ($ctrl.onUpload) $ctrl.onUpload(res) })
+				Promise.resolve()
+					.then(()=> {
+						if ($ctrl.onUploadStart) $ctrl.onUploadStart({files: this.files});
+					})
+					.then(()=> $http.post(resolvedUrl, formData, {
+						headers: {'Content-Type': undefined}, // Need to override the headers so that angular changes them over into multipart/mime
+						transformRequest: angular.identity,
+						uploadEventHandlers: $ctrl.onUploadProgress ? {
+							progress: e => {
+								$ctrl.onUploadProgress({files: this.files, progress: Math.round(e.loaded / e.total * 100)});
+							},
+						} : undefined,
+					}))
+					.then(res => {
+						if ($ctrl.onUpload) $ctrl.onUpload(res);
+						if ($ctrl.onUploadEnd) $ctrl.onUploadEnd({files: this.files});
+					})
 					.catch(error => { if ($ctrl.onError) $ctrl.onError({error}) })
 					.then(()=> $ctrl.refresh())
 					.finally(()=> $ctrl.isUploading = false)

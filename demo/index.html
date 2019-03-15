@@ -52,6 +52,9 @@
 				]"
 				on-query="filterQuery(posts)"
 				tags="['Tag4']"
+				on-upload-start="uploadStart(files)"
+				on-upload-progress="uploadProgress(files, progress)"
+				on-upload-end="uploadEnd(files)"
 			></ui-history>
 
 			<div ng-if="isGitHub" class="alert alert-warning">

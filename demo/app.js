@@ -13,4 +13,8 @@ app.controller("historyExampleCtrl", function($scope) {
 	$scope.filterQuery = data => data; // Example filter that returns everything. Change this to a mangling funciton if you want to restrict what gets shown
 
 	$scope.$on('angular-ui-history.button.custom', ()=> alert('Hello!'));
+
+	$scope.uploadStart = files => console.log('Upload started', files);
+	$scope.uploadProgress = (files, progress) => console.log('Upload progress', progress, files);
+	$scope.uploadEnd = files => console.log('Upload complete', files);
 });
