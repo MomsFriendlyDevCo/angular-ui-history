@@ -62,6 +62,7 @@ Events (Listenable)
 | `angular-ui-history.button`       | `(button)`   | Fired when the user presses any button                       |
 | `angular-ui-history.button.${ID}` | `()`         | Fired when the user presses the button desginated by `${ID}` |
 | `angular-ui-history.posted`       | `(body)`     | Fired when the user makes (and has submitted successfully) a new post |
+| `angular-ui-history.empty-post`   | `()`         | Fired when the user attempts to make an empty post           |
 | `angular-ui-history.template`     | `(template)` | Fired when the user selectes a template                      |
 
 

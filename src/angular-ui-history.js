@@ -280,7 +280,10 @@ angular.module('angular-ui-history',[
 
 		$ctrl.makePost = (body, tags) => {
 			if (!$ctrl.allowPost) throw new Error('Posting not allowed');
-			if (!body) return; // Silently forget if the user is trying to publish empty contents
+			if (!body) { // Silently forget if the user is trying to publish empty contents
+				$rootScope.$broadcast('angular-ui-history.empty-post');
+				return;
+			}
 
 			var resolvedUrl =
 				angular.isString($ctrl.postUrl) ? $ctrl.postUrl :
