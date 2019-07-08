@@ -109,7 +109,12 @@ angular.module('angular-ui-history', ['angular-bs-tooltip', 'ngQuill', 'ui.grava
 
     $ctrl.makePost = function (body, tags) {
       if (!$ctrl.allowPost) throw new Error('Posting not allowed');
-      if (!body) return; // Silently forget if the user is trying to publish empty contents
+
+      if (!body) {
+        // Silently forget if the user is trying to publish empty contents
+        $rootScope.$broadcast('angular-ui-history.empty-post');
+        return;
+      }
 
       var resolvedUrl = angular.isString($ctrl.postUrl) ? $ctrl.postUrl : angular.isFunction($ctrl.postUrl) ? $ctrl.postUrl($ctrl) : angular.isString($ctrl.queryUrl) ? $ctrl.queryUrl : angular.isFunction($ctrl.queryUrl) ? $ctrl.queryUrl($ctrl) : undefined;
       if (!resolvedUrl) throw new Error('Resolved POST URL is empty');

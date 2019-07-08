@@ -1,6 +1,6 @@
 {
   "name": "@momsfriendlydevco/angular-ui-history",
-  "version": "1.4.4",
+  "version": "1.4.5",
   "description": "Simple history display component for Angular",
   "main": "dist/angular-ui-history.js",
   "scripts": {
