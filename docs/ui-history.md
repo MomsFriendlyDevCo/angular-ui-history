@@ -64,6 +64,7 @@ Events (Listenable)
 | `angular-ui-history.posted`       | `(body)`     | Fired when the user makes (and has submitted successfully) a new post |
 | `angular-ui-history.empty-post`   | `()`         | Fired when the user attempts to make an empty post           |
 | `angular-ui-history.template`     | `(template)` | Fired when the user selectes a template                      |
+| `angular-ui-history.content`      | `(content)`  | Fired when the user changes the editor content               |
 
 
 Events (Broadcastable)
