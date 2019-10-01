@@ -41,7 +41,7 @@ app.get('/dist/angular-ui-history.css', function(req, res) {
 });
 
 // Fake server to originally serve history.json + then mutate it with incomming posts
-var history = JSON.parse(fs.readFileSync('./demo/history.json', 'utf-8')).map(post => {
+var history = JSON.parse(fs.readFileSync(root + '/demo/history.json', 'utf-8')).map(post => {
 	post.date = new Date(post.date);
 	return post;
 });
