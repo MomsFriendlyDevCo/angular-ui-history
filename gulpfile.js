@@ -92,6 +92,7 @@ gulp.task('gh-pages', ['build'], function() {
 		'./node_modules/@momsfriendlydevco/angular-bs-tooltip/dist/angular-bs-tooltip.min.js',
 		'./node_modules/bootstrap/dist/css/bootstrap.min.css',
 		'./node_modules/bootstrap/dist/js/bootstrap.min.js',
+		'./node_modules/bootstrap/dist/js/bootstrap.bundle.min.js',
 		'./node_modules/jquery/dist/jquery.min.js',
 		'./node_modules/font-awesome/css/font-awesome.min.css',
 		'./node_modules/font-awesome/fonts/fontawesome-webfont.ttf',
