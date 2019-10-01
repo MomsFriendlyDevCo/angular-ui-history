@@ -89,13 +89,13 @@ angular.module('angular-ui-history', ['angular-bs-tooltip', 'ngQuill', 'ui.grava
         }
       }) // }}}
       // Post loading + catchers {{{
-      .catch(function (error) {
+      ["catch"](function (error) {
         if (angular.isFunction($ctrl.onError)) $ctrl.onError({
           error: error
         });
-      }).finally(function () {
+      })["finally"](function () {
         return $ctrl.isLoading = false;
-      }).finally(function () {
+      })["finally"](function () {
         if (angular.isFunction($ctrl.onLoadingStop)) return $ctrl.onLoadingStop();
       }); // }}}
     };
@@ -129,11 +129,11 @@ angular.module('angular-ui-history', ['angular-bs-tooltip', 'ngQuill', 'ui.grava
         return $ctrl.refresh(true);
       }).then(function () {
         return $rootScope.$broadcast('angular-ui-history.posted', body);
-      }).catch(function (error) {
+      })["catch"](function (error) {
         if ($ctrl.onError) $ctrl.onError({
           error: error
         });
-      }).finally(function () {
+      })["finally"](function () {
         return $ctrl.isPosting = false;
       });
     }; // }}}
@@ -150,16 +150,16 @@ angular.module('angular-ui-history', ['angular-bs-tooltip', 'ngQuill', 'ui.grava
       return $q.resolve().then(function () {
         return $ctrl.isDeleting = true;
       }).then(function () {
-        return $http.delete("".concat(resolvedUrl, "/").concat(id));
+        return $http["delete"]("".concat(resolvedUrl, "/").concat(id));
       }).then(function () {
         return $ctrl.refresh(true);
       }).then(function () {
         return $rootScope.$broadcast('angular-ui-history.deleted', id);
-      }).catch(function (error) {
+      })["catch"](function (error) {
         if ($ctrl.onError) $ctrl.onError({
           error: error
         });
-      }).finally(function () {
+      })["finally"](function () {
         return $ctrl.isDeleting = false;
       });
     }; // }}}
@@ -212,13 +212,13 @@ angular.module('angular-ui-history', ['angular-bs-tooltip', 'ngQuill', 'ui.grava
           if ($ctrl.onUploadEnd) $ctrl.onUploadEnd({
             files: _this.files
           });
-        }).catch(function (error) {
+        })["catch"](function (error) {
           if ($ctrl.onError) $ctrl.onError({
             error: error
           });
         }).then(function () {
           return $ctrl.refresh();
-        }).finally(function () {
+        })["finally"](function () {
           return $ctrl.isUploading = false;
         });
       });
@@ -406,20 +406,45 @@ angular.module('angular-ui-history', ['angular-bs-tooltip', 'ngQuill', 'ui.grava
         }).filter(function (i, index, arr) {
           return index == 0 || arr[index - 1].filename != i.filename;
         }); // Remove duplicate filenames
-      }).catch(function (error) {
+      })["catch"](function (error) {
         if ($ctrl.onError) $ctrl.onError({
           error: error
         });
-      }).finally(function () {
+      })["finally"](function () {
         return $ctrl.isLoading = false;
-      }).finally(function () {
+      })["finally"](function () {
         if ($ctrl.onLoadingStop) $ctrl.onLoadingStop();
       });
-    };
+    }; // Retrieve Selected Files {{{
+
+
+    $ctrl.getSelectedFiles = function (file) {
+      // TODO: Ability to toggle files before downloading
+      //return $ctrl.uploads.filter(p => p.selected);
+      return $ctrl.uploads;
+    }; // }}}
+    // File Download {{{
+
+
+    $ctrl.downloadFiles = function () {
+      var files = $ctrl.getSelectedFiles();
+      var link = document.createElement('a');
+      link.style.display = 'none';
+      document.body.appendChild(link);
+
+      for (var i = 0; i < files.length; i++) {
+        link.setAttribute('download', files[i].filename);
+        link.setAttribute('href', files[i].url);
+        link.click();
+      }
+
+      document.body.removeChild(link);
+    }; // }}}
+
 
     $scope.$evalAsync($ctrl.refresh); // }}}
   }],
-  template: "\n\t\t<div ng-if=\"$ctrl.isLoading\">\n\t\t\t<h2>\n\t\t\t\t<i class=\"fa fa-spinner fa-spin\"></i>\n\t\t\t\tFetching list of files...\n\t\t\t</h2>\n\t\t</div>\n\t\t<div ng-if=\"!$ctrl.isLoading && $ctrl.uploads.length == 0\" class=\"text-muted text-center\">\n\t\t\tNo file uploads found\n\t\t</div>\n\t\t<ul class=\"list-group\">\n\t\t\t<a ng-repeat=\"file in $ctrl.uploads track by file.filename\" ng-href=\"{{file.url}}\" target=\"_blank\" class=\"list-group-item\">\n\t\t\t\t<div class=\"pull-right\">\n\t\t\t\t\t<span class=\"badge\">{{file.size}}</span>\n\t\t\t\t</div>\n\t\t\t\t{{file.filename}}\n\t\t\t</a>\n\t\t</ul>\n\t"
+  template: "\n\t\t<div ng-if=\"$ctrl.isLoading\">\n\t\t\t<h2>\n\t\t\t\t<i class=\"fa fa-spinner fa-spin\"></i>\n\t\t\t\tFetching list of files...\n\t\t\t</h2>\n\t\t</div>\n\t\t<div ng-if=\"!$ctrl.isLoading && $ctrl.uploads.length == 0\" class=\"text-muted text-center\">\n\t\t\tNo file uploads found\n\t\t</div>\n\t\t<ul class=\"list-group\">\n\t\t\t<a ng-repeat=\"file in $ctrl.uploads track by file.filename\" ng-href=\"{{file.url}}\" target=\"_blank\" class=\"list-group-item\">\n\t\t\t\t<div class=\"pull-right\">\n\t\t\t\t\t<span class=\"badge\">{{file.size}}</span>\n\t\t\t\t</div>\n\t\t\t\t{{file.filename}}\n\t\t\t</a>\n\t\t</ul>\n\t\t<div class=\"form-group\">\n\t\t\t<a ng-click=\"$ctrl.downloadFiles()\" ng-class=\"$ctrl.getSelectedFiles().length > 0?'':'disabled'\" class=\"btn btn-primary\">\n\t\t\t\t<i class=\"fa fa-download\"></i> Download All Files\n\t\t\t</a>\n\t\t</div>\n\t"
 }) // }}}
 // uiHistoryLatest
 // Show the most recent history item
@@ -466,7 +491,7 @@ angular.module('angular-ui-history', ['angular-bs-tooltip', 'ngQuill', 'ui.grava
             } else {
               return res.data;
             }
-          }).catch(function (err) {
+          })["catch"](function (err) {
             return console.log('err:', err);
           });
         } else if (angular.isArray($ctrl.posts)) {
@@ -499,13 +524,13 @@ angular.module('angular-ui-history', ['angular-bs-tooltip', 'ngQuill', 'ui.grava
         if (typeof post.body === 'string' && (post.type == 'user.comment' || post.type == 'user.status' || post.type == 'system.status')) post.body = $sce.trustAsHtml(post.body);
       }) // }}}
       // Post loading + catchers {{{
-      .catch(function (error) {
+      ["catch"](function (error) {
         if (angular.isFunction($ctrl.onError)) $ctrl.onError({
           error: error
         });
-      }).finally(function () {
+      })["finally"](function () {
         return $ctrl.isLoading = false;
-      }).finally(function () {
+      })["finally"](function () {
         if (angular.isFunction($ctrl.onLoadingStop)) return $ctrl.onLoadingStop();
       }); // }}}
     }; // }}}
