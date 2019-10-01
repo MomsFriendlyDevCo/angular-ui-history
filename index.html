@@ -9,7 +9,7 @@
 
 		<!-- Bootstrap -->
 		<link href="node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
-		<script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+		<script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
 		<!-- Angular -->
 		<script src="node_modules/angular/angular.min.js"></script>
@@ -51,6 +51,10 @@
 					{title: 'PICNIC', icon: 'fa fa-fw fa-user', content: 'Problem in chair not in computer'},
 				]"
 				on-query="filterQuery(posts)"
+				tags="['Tag4']"
+				on-upload-start="uploadStart(files)"
+				on-upload-progress="uploadProgress(files, progress)"
+				on-upload-end="uploadEnd(files)"
 			></ui-history>
 
 			<div ng-if="isGitHub" class="alert alert-warning">
@@ -58,6 +62,15 @@
 				GitHub pages does not support dynamic content so posting via the GitHub demo will not actually make the post appear in the history list
 			</div>
 
+			<strong>Latest Post</strong>
+			<ui-history-latest
+				query-url="'history.json'"
+			></ui-history-latest>
+
+			<strong>Files</strong>
+			<ui-history-files
+				query-url="'history.json'"
+			></ui-history-files>
 		</div>
 	</body>
 </html>
