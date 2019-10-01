@@ -612,6 +612,30 @@ angular.module('angular-ui-history',[
 				})
 		};
 
+		// Retrieve Selected Files {{{
+		$ctrl.getSelectedFiles = function (file) {
+			// TODO: Ability to toggle files before downloading
+			//return $ctrl.uploads.filter(p => p.selected);
+			return $ctrl.uploads;
+		}
+		// }}}
+
+		// File Download {{{
+		$ctrl.downloadFiles = function () {
+			var files = $ctrl.getSelectedFiles();
+			var link = document.createElement('a');
+			link.style.display = 'none';
+
+			document.body.appendChild(link);
+			for (var i = 0; i < files.length; i++) {
+				link.setAttribute('download', files[i].filename);
+				link.setAttribute('href', files[i].url);
+				link.click();
+			}
+			document.body.removeChild(link);
+		}
+		// }}}
+
 		$scope.$evalAsync($ctrl.refresh);
 		// }}}
 	},
@@ -633,6 +657,11 @@ angular.module('angular-ui-history',[
 				{{file.filename}}
 			</a>
 		</ul>
+		<div class="form-group">
+			<a ng-click="$ctrl.downloadFiles()" ng-class="$ctrl.getSelectedFiles().length > 0?'':'disabled'" class="btn btn-primary">
+				<i class="fa fa-download"></i> Download All Files
+			</a>
+		</div>
 	`
 })
 // }}}
