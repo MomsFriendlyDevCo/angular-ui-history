@@ -6,8 +6,8 @@
 	{"_id": 4, "type": "user.comment", "date": "2017-04-18T04:16:21.123Z", "user": {"name": "Mr Baz.", "email": "baz@test.com", "url": "http://mfdc.biz"}, "body": "Yet another post. This time the user avatar is a link."},
 	{"_id": 5, "type": "user.change", "date": "2017-04-20T03:46:12.215Z", "user": {"name": "Mr Baz.", "email": "baz@test.com"}, "field": "status", "from": "Active", "to": "Draft", "tags": ["Tag1"]},
 	{"_id": 6, "type": "user.status", "date": "2017-04-21T01:36:57.121Z", "user": {"name": "Mr Foo.", "email": "foo@test.com"}, "body": "is feeling <strong>Happy</strong>"},
-	{"_id": 7, "type": "user.upload", "date": "2017-04-21T03:24:12.281Z", "user": {"name": "Mr Foo.", "email": "foo@test.com"}, "filename": "singleFile.zip", "size": "10mb", "tags": ["Tag1", "Tag2", "Tag3"]},
+	{"_id": 7, "type": "user.upload", "date": "2017-04-21T03:24:12.281Z", "user": {"name": "Mr Foo.", "email": "foo@test.com"}, "filename": "singleFile.zip", "size": "10mb", "url":"/singleFile.zip", "tags": ["Tag1", "Tag2", "Tag3"]},
 	{"_id": 8, "type": "user.comment", "date": "2017-04-21T01:36:57.163Z", "user": {"name": "Mr Foo.", "email": "foo@test.com"}, "body": "<strong>Bold</strong>, <em>Italics!</em>, <u>Underline!</u>"},
-	{"_id": 9, "type": "user.upload", "date": "2017-04-23T11:21:19.211Z", "user": {"name": "Mr Foo.", "email": "foo@test.com"}, "files": [{"filename": "file1.zip", "size": "1mb"}, {"filename": "file2.zip", "size": "2mb"}, {"filename": "file3.zip", "size": "3mb"}]},
+	{"_id": 9, "type": "user.upload", "date": "2017-04-23T11:21:19.211Z", "user": {"name": "Mr Foo.", "email": "foo@test.com"}, "files": [{"filename": "file1.zip", "size": "1mb", "url":"/file1.zip"}, {"filename": "file2.zip", "size": "2mb", "url":"/file1.zip"}, {"filename": "file3.zip", "size": "3mb", "url":"/file1.zip"}]},
 	{"_id": 10, "type": "system.status", "date": "2017-04-24T16:40:23.271Z", "body": "item has been archived"}
 ]
