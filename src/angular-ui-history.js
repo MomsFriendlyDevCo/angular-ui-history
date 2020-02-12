@@ -927,7 +927,7 @@ angular.module('angular-ui-history',[
 				// Misc data mangling {{{
 				.then(data => {
 					var post = $ctrl.post;
-					if (typeof post.body === 'string' && (post.type == 'user.comment' || post.type == 'user.status' || post.type == 'system.status')) post.body = $sce.trustAsHtml(post.body);
+					if (post && post.body && typeof post.body === 'string' && (post.type == 'user.comment' || post.type == 'user.status' || post.type == 'system.status')) post.body = $sce.trustAsHtml(post.body);
 				})
 				// }}}
 				// Post loading + catchers {{{
