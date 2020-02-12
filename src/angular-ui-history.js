@@ -65,9 +65,18 @@ angular.module('angular-ui-history',[
 				</div>
 			</div>
 			<!-- }}} -->
-			<div style="display: none">
-				<input id="angular-ui-history-upload-helper" name="file" multiple type="file"/>
-			</div>
+
+			<ui-history-upload
+				query-url="$ctrl.queryUrl"
+				post-url="$ctrl.postUrl"
+				on-error="$ctrl.onError"
+				on-upload="$ctrl.onUpload"
+				on-upload-start="$ctrl.onUploadStart"
+				on-upload-progress="$ctrl.onUploadProgress"
+				on-upload-end="$ctrl.onUploadEnd"
+				tags="$ctrl.tags"
+			></ui-history-upload>
+
 			<!-- Header editor (if display='recentFirst') {{{ -->
 			<div ng-if="$ctrl.allowPost && $ctrl.display == 'recentFirst'">
 				<div ng-show="$ctrl.isPosting" class="text-center">
@@ -217,7 +226,6 @@ angular.module('angular-ui-history',[
 		$ctrl.posts;
 		$ctrl.isLoading = false;
 
-
 		/**
 		* Load all posts (either via the queryUrl or from the posts array)
 		* @returns {Promise}
@@ -328,58 +336,9 @@ angular.module('angular-ui-history',[
 		}
 		// }}}
 
-		// Uploads {{{
-		$ctrl.isUploading = false;
-		// Bind to element input[type=file] handlers and listen for changes {{{
-		$element
-			.find('input[type=file]')
-			.on('change', function() { $timeout(()=> { // Attach to file widget and listen for change events so we can update the text
-				var resolvedUrl =
-					angular.isString($ctrl.postUrl) ? $ctrl.postUrl :
-					angular.isFunction($ctrl.postUrl) ? $ctrl.postUrl($ctrl) :
-					angular.isString($ctrl.queryUrl) ? $ctrl.queryUrl :
-					angular.isFunction($ctrl.queryUrl) ? $ctrl.queryUrl($ctrl) :
-					undefined;
-				if (!resolvedUrl) throw new Error('Resovled POST URL is empty');
-
-				var formData = new FormData();
-				Object.keys(this.files).forEach((k, i) => formData.append('file_' + i, this.files[k]));
-
-				// Tag files
-				if ($ctrl.tags && $ctrl.tags.length) {
-					$ctrl.tags.forEach(tag => formData.append('tags[]', tag));
-				}
-
-				$ctrl.isUploading = true;
-				Promise.resolve()
-					.then(()=> {
-						if ($ctrl.onUploadStart) $ctrl.onUploadStart({files: this.files});
-					})
-					.then(()=> $http.post(resolvedUrl, formData, {
-						headers: {'Content-Type': undefined}, // Need to override the headers so that angular changes them over into multipart/mime
-						transformRequest: angular.identity,
-						uploadEventHandlers: $ctrl.onUploadProgress ? {
-							progress: e => {
-								$ctrl.onUploadProgress({files: this.files, progress: Math.round(e.loaded / e.total * 100)});
-							},
-						} : undefined,
-					}))
-					.then(res => {
-						if ($ctrl.onUpload) $ctrl.onUpload(res);
-						if ($ctrl.onUploadEnd) $ctrl.onUploadEnd({files: this.files});
-					})
-					.catch(error => { if ($ctrl.onError) $ctrl.onError({error}) })
-					.then(()=> $ctrl.refresh())
-					.finally(()=> $ctrl.isUploading = false)
-			})});
-
+		// Trigger the file upload dialog using the upload helper input element {{{
 		$scope.$on('angular-ui-history.button.upload', ()=> $ctrl.selectFiles());
-		// }}}
-
-		/**
-		* Trigger the file upload dialog using the upload helper input element
-		*/
-		$ctrl.selectFiles = ()=> $element.find('#angular-ui-history-upload-helper').click();
+		$ctrl.selectFiles = ()=> $element.find('input[type=file]').click();
 		// }}}
 
 		// File upload list {{{
@@ -488,7 +447,7 @@ angular.module('angular-ui-history',[
 											</li>
 										</ul>
 									</div>
-									<a ng-repeat="button in $ctrl.buttons" class="btn" ng-class="$ctrl.class || 'btn-default'" ng-click="$ctrl.runButton(button)">
+									<a ng-repeat="button in $ctrl.buttons" class="btn" ng-class="button.class || 'btn-default'" ng-click="$ctrl.runButton(button)">
 										<i ng-if="button.icon" class="{{button.icon}}"></i>
 										{{button.title}}
 									</a>
@@ -505,7 +464,7 @@ angular.module('angular-ui-history',[
 			</div>
 		</form>
 	`,
-	controller: function($scope) {
+	controller: function($scope, $element) {
 		var $ctrl = this;
 
 		// Quill setup {{{
@@ -556,9 +515,83 @@ angular.module('angular-ui-history',[
 })
 // }}}
 
+// uiHistoryUpload
+// {{{
+.component('uiHistoryUpload', {
+	bindings: {
+		queryUrl: '<',
+		postUrl: '<',
+		onError: '&?',
+		onUpload: '&?',
+		onUploadStart: '&?',
+		onUploadProgress: '&?',
+		onUploadEnd: '&?',
+		tags: '<?',
+	},
+	template: `
+		<div style="display: none">
+			<input name="file" multiple type="file"/>
+		</div>
+	`,
+	controller: function($scope, $element, $http, $timeout) {
+		var $ctrl = this;
+
+		$ctrl.isUploading = false;
+		$ctrl.upload = function() {
+			console.log('upload', $ctrl.postUrl, $ctrl.queryUrl, this.files);
+			$timeout(()=> { // Attach to file widget and listen for change events so we can update the text
+				var resolvedUrl =
+					angular.isString($ctrl.postUrl) ? $ctrl.postUrl :
+					angular.isFunction($ctrl.postUrl) ? $ctrl.postUrl($ctrl) :
+					angular.isString($ctrl.queryUrl) ? $ctrl.queryUrl :
+					angular.isFunction($ctrl.queryUrl) ? $ctrl.queryUrl($ctrl) :
+					undefined;
+				if (!resolvedUrl) throw new Error('Resovled POST URL is empty');
+
+				var formData = new FormData();
+				Object.keys(this.files).forEach((k, i) => formData.append('file_' + i, this.files[k]));
+
+				// Tag files
+				if ($ctrl.tags && $ctrl.tags.length) {
+					$ctrl.tags.forEach(tag => formData.append('tags[]', tag));
+				}
+
+				$ctrl.isUploading = true;
+				Promise.resolve()
+					.then(()=> {
+						if ($ctrl.onUploadStart) $ctrl.onUploadStart({files: this.files});
+					})
+					.then(()=> $http.post(resolvedUrl, formData, {
+						headers: {'Content-Type': undefined}, // Need to override the headers so that angular changes them over into multipart/mime
+						transformRequest: angular.identity,
+						uploadEventHandlers: $ctrl.onUploadProgress ? {
+							progress: e => {
+								$ctrl.onUploadProgress({files: this.files, progress: Math.round(e.loaded / e.total * 100)});
+							},
+						} : undefined,
+					}))
+					.then(res => {
+						if ($ctrl.onUpload) $ctrl.onUpload(res);
+						if ($ctrl.onUploadEnd) $ctrl.onUploadEnd({files: this.files});
+					})
+					.catch(error => { if ($ctrl.onError) $ctrl.onError({error}) })
+					.then(()=> $scope.$emit('angular-ui-history.refresh'))
+					.finally(()=> $ctrl.isUploading = false)
+			})
+		};
+
+		$element
+			.find('input[type=file]')
+			.on('change', $ctrl.upload);
+
+	}
+})
+// }}}
+
 // uiHistoryFiles (directive, file listing area) {{{
 .component('uiHistoryFiles', {
 	bindings: {
+		buttons: '<',
 		allowUpload: '<',
 		queryUrl: '<',
 		postUrl: '<',
@@ -567,8 +600,12 @@ angular.module('angular-ui-history',[
 		onLoadingStop: '&?',
 		onQuery: '&?',
 		onUpload: '&?',
+		onUploadStart: '&?',
+		onUploadProgress: '&?',
+		onUploadEnd: '&?',
+		tags: '<?',
 	},
-	controller: function($http, $scope) {
+	controller: function($http, $scope, $element) {
 		var $ctrl = this;
 
 		$ctrl.uploads;
@@ -611,8 +648,10 @@ angular.module('angular-ui-history',[
 					if ($ctrl.onLoadingStop) $ctrl.onLoadingStop();
 				})
 		};
+		$scope.$on('angular-ui-history.refresh', ()=> $ctrl.refresh(true));
 
 		// Retrieve Selected Files {{{
+		// TODO: Subscribe to an event instead? Button verbs?
 		$ctrl.getSelectedFiles = function (file) {
 			// TODO: Ability to toggle files before downloading
 			//return $ctrl.uploads.filter(p => p.selected);
@@ -636,10 +675,48 @@ angular.module('angular-ui-history',[
 		}
 		// }}}
 
+		// Trigger the file upload dialog using the upload helper input element {{{
+		$scope.$on('angular-ui-history.button.upload', ()=> $ctrl.selectFiles());
+		$ctrl.selectFiles = ()=> $element.find('input[type=file]').click();
+		// }}}
+
+		/**
+		* Execute the event bubbling for the given button
+		* @param {Object} button The button object that triggered the event
+		* @fires angular-ui-history.button.${button.action}
+		* @fires angular-ui-history.button
+		*/
+		$ctrl.runButton = button => {
+			if (button.action) $scope.$emit(`angular-ui-history.button.${button.action}`, button);
+			$scope.$emit('angular-ui-history.button', button);
+		};
+
+		// Init {{{
+		$ctrl.$onInit = ()=> {
+			// Buttons is empty fill it with something appropriate based on settings
+			if (!$ctrl.buttons) {
+				$ctrl.buttons = [];
+				if ($ctrl.allowUpload)
+					$ctrl.buttons.push({title: 'Upload files...', icon: 'fa fa-file-o', class: 'btn-primary', action: 'upload'});
+			}
+		};
+		// }}}
+
 		$scope.$evalAsync($ctrl.refresh);
 		// }}}
 	},
 	template: `
+		<ui-history-upload
+			query-url="$ctrl.queryUrl"
+			post-url="$ctrl.postUrl"
+			on-error="$ctrl.onError"
+			on-upload="$ctrl.onUpload"
+			on-upload-start="$ctrl.onUploadStart"
+			on-upload-progress="$ctrl.onUploadProgress"
+			on-upload-end="$ctrl.onUploadEnd"
+			tags="$ctrl.tags"
+		></ui-history-upload>
+
 		<div ng-if="$ctrl.isLoading">
 			<h2>
 				<i class="fa fa-spinner fa-spin"></i>
@@ -658,6 +735,10 @@ angular.module('angular-ui-history',[
 			</a>
 		</ul>
 		<div class="form-group">
+			<a ng-repeat="button in $ctrl.buttons" class="btn" ng-class="button.class || 'btn-default'" ng-click="$ctrl.runButton(button)">
+				<i ng-if="button.icon" class="{{button.icon}}"></i>
+				{{button.title}}
+			</a>
 			<a ng-click="$ctrl.downloadFiles()" ng-class="$ctrl.getSelectedFiles().length > 0?'':'disabled'" class="btn btn-primary">
 				<i class="fa fa-download"></i> Download All Files
 			</a>
