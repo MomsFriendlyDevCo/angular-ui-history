@@ -363,7 +363,7 @@ angular.module('angular-ui-history',[
 				$ctrl.buttons = [];
 				if ($ctrl.allowUpload) {
 					if ($ctrl.allowUploadList === undefined || $ctrl.allowUploadList) $ctrl.buttons.push({title: 'File list', icon: 'fa fa-folder-o', action: 'uploadList'});
-					$ctrl.buttons.push({title: 'Upload files...', icon: 'fa fa-file-o', action: 'upload'});
+					$ctrl.buttons.push({title: 'Upload files...', icon: 'fa fa-file', action: 'upload'});
 				};
 			}
 
@@ -697,7 +697,7 @@ angular.module('angular-ui-history',[
 			if (!$ctrl.buttons) {
 				$ctrl.buttons = [];
 				if ($ctrl.allowUpload)
-					$ctrl.buttons.push({title: 'Upload files...', icon: 'fa fa-file-o', class: 'btn-primary', action: 'upload'});
+					$ctrl.buttons.push({title: 'Upload files...', icon: 'fa fa-file', class: 'btn-primary', action: 'upload'});
 			}
 		};
 		// }}}
