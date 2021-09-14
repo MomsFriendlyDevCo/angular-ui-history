@@ -3,6 +3,28 @@ angular.module('angular-ui-history',[
 	'ngQuill',
 	'ui.gravatar',
 ])
+.factory('$debounce', ['$timeout', function($timeout) {
+	function debounce(callback, timeout, apply) {
+		timeout = angular.isUndefined(timeout) ? 0 : timeout;
+		apply = angular.isUndefined(apply) ? true : apply;
+		var callCount = 0;
+
+		return function() {
+			var self = this;
+			var args = arguments;
+			callCount++;
+
+			var wrappedCallback = (function(version) {
+				return function() {
+					if (version === callCount) return callback.apply(self, args);
+				};
+			})(callCount);
+
+			return $timeout(wrappedCallback, timeout, apply);
+		};
+	}
+	return debounce;
+}])
 
 // Provider {{{
 .provider('uiHistory', function() {
@@ -38,6 +60,7 @@ angular.module('angular-ui-history',[
 		onUploadEnd: '&?',
 		tags: '<?',
 		userAvatar: '@?',
+		baseUrlImage: '<?',
 	},
 	template: `
 		<div class="ui-history">
@@ -88,6 +111,7 @@ angular.module('angular-ui-history',[
 						templates="$ctrl.templates"
 						on-post="$ctrl.makePost(body, tags)"
 						tags="$ctrl.tags"
+						base-url-image="$ctrl.baseUrlImage"
 					></ui-history-editor>
 				</div>
 				<hr/>
@@ -387,12 +411,13 @@ angular.module('angular-ui-history',[
 		templates: '<',
 		onPost: '&',
 		tags: '<?',
+		baseUrlImage: '<?',
 	},
 	template: `
 		<form ng-submit="$ctrl.makePost()" class="form-horizontal">
 			<div class="form-group">
 				<div class="col-sm-12">
-					<ng-quill-editor ng-model="$ctrl.newPost.body" on-content-changed="$ctrl.contentChanged()">
+					<ng-quill-editor ng-model="$ctrl.newPost.body" on-content-changed="$ctrl.contentChanged()" modules="$ctrl.modules">
 						<!-- ng-quill toolbar config {{{ -->
 						<ng-quill-toolbar>
 							<div>
@@ -464,12 +489,50 @@ angular.module('angular-ui-history',[
 			</div>
 		</form>
 	`,
-	controller: function($scope, $element) {
+	controller: function($scope, $q, $element, $debounce) {
 		var $ctrl = this;
 
 		// Quill setup {{{
+		$ctrl.modules = {};
 		$ctrl.colors = ['#e60000', '#ff9900', '#ffff00', '#008a00', '#0066cc', '#9933ff', '#ffffff', '#facccc', '#ffebcc', '#ffffcc', '#cce8cc', '#cce0f5', '#ebd6ff', '#bbbbbb', '#f06666', '#ffc266', '#ffff66', '#66b966', '#66a3e0', '#c285ff', '#888888', '#a10000', '#b26b00', '#b2b200', '#006100', '#0047b2', '#6b24b2', '#444444', '#5c0000', '#663d00', '#666600', '#003700', '#002966', '#3d1466'],
-		$ctrl.contentChanged = () => $scope.$emit('angular-ui-history.content', $ctrl.newPost.body);
+
+		$ctrl.contentChanged = $debounce(() => {
+			$q.resolve()
+				.then(() => $ctrl.baseUrlImage ? null : $q.reject('SKIP'))
+				.then(() => Array.from($element[0].querySelectorAll('img:not([src^="data:"])')))
+				.then(imgs => $q.all(
+					imgs.map(img => {
+						return $q.resolve()
+							.then(() => img.classList.add('img--loading'))
+							.then(() => $ctrl.convertImgToBase64URL(img.getAttribute('src')))
+							.then(res => img.setAttribute('src', res))
+							.finally(() => img.classList.remove('img--loading'))
+					})
+				))
+				.catch(err => err == 'SKIP' ? null : $q.reject(err))
+				.finally(() => $scope.$emit('angular-ui-history.content', $ctrl.newPost.body))
+		}, 300);
+
+		$ctrl.convertImgToBase64URL = function (url){
+			return new Promise ((resolve, reject) => {
+				const canvas = document.createElement('CANVAS');
+				const img = document.createElement('img');
+
+				img.setAttribute('src', url)
+				img.setAttribute('crossorigin', 'anonymous');
+
+				img.onload = function () {
+					canvas.height = img.height;
+					canvas.width = img.width;
+					const ctx = canvas.getContext('2d');
+					ctx.drawImage(img, 10, 10,  img.width, img.height);
+
+					resolve(canvas.toDataURL())
+				};
+
+				img.onerror = error => reject('Could not load image, please check that the file is accessible');
+			})
+		}
 		// }}}
 
 		$ctrl.newPost = {body: ''};
@@ -509,6 +572,11 @@ angular.module('angular-ui-history',[
 		$ctrl.$onInit = ()=> {
 			// Initialize tags to for new comments
 			if ($ctrl.tags && $ctrl.tags.length) $ctrl.newPost.tags = $ctrl.tags.map(t => t);
+
+			// Drag/drop images
+			if ($ctrl.baseUrlImage) {
+				$ctrl.modules.imageDrop = true;
+			}
 		};
 		// }}}
 	},

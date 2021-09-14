@@ -30,6 +30,7 @@ Directive Settings
 | `allowPost`       | `boolean`              | `false`         | Whether to allow posting of new comments                                                                        |
 | `allowUpload`     | `boolean`              | `false`         | Whether to allow file attachments in the comment feed                                                           |
 | `allowUploadList` | `boolean`              | `true`          | Whether to show a button which displays the list of uploaded files                                              |
+| `baseUrlImage`    | `boolean`              | `false`         | Whether to encode images to base64                                                                              |
 | `buttons`         | `array`                | Upload button   | Collection of buttons to display in the toolbar. Each must have a `title`, `icon` and an optional `action` property. See notes below on how to react to events |
 | `display`         | `string`               | `'oldestFirst'` | How to display posts. Can be either `'recentFirst'` or `'oldestFirst'`                                          |
 | `queryUrl`        | `string` or `function` | `undefined`     | Where to fetch the existing history from. If this is a function it is expected to provide the GET string to use |

@@ -21,6 +21,7 @@
 		<script src="node_modules/quill/dist/quill.min.js"></script>
 		<script src="node_modules/ng-quill/dist/ng-quill.min.js"></script>
 		<link rel="stylesheet" href="node_modules/quill/dist/quill.snow.css">
+		<script src="/node_modules/quill-image-drop-module/image-drop.min.js"></script>
 
 		<!-- Angular-UI-History -->
 		<script src="dist/angular-ui-history.js"></script>
@@ -41,6 +42,7 @@
 				post-url="'history.json'"
 				allow-post="true"
 				allow-upload="true"
+				base-url-image="false"
 				buttons="[
 					{title: 'Custom Button', icon: 'fa fa-flag', action: 'custom'},
 					{title: 'File list', icon: 'fa fa-folder-o', action: 'uploadList'},
