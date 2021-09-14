@@ -37,6 +37,7 @@ Directive Settings
 | `queryUploadsUrl` | `string` or `function` | `undefined`     | Seperate URL to fetch files from if `allowUploadList` is enabled (Defaults to using `queryUrl` if unspecified)  |
 | `posts`           | `array`                | `undefined`     | List of posts to display instead of fetching via `queryUrl`                                                     |
 | `postUrl`         | `string` or `function` | `undefined`     | Where to post the history items created if `allowPost == true`. This end-point gets a single `req.body.body` value which is the HTML output of the WYSIWYG post. If undefined, `queryUrl` will be used |
+| `mentionUrl`      | `string` or `function` | `undefined`     | Where to fetch the mention list from. If this is a function it is expected to provide the GET string to use     |
 | `templates`       | `array`                | `undefined`     | Optional list of templates to quickly set the contents. Each item should be an object containing at least `title` and `content` with an optional `icon` |
 | `onError`         | `function`             | `undefined`     | How to catch error messages from any of the interfaces. Called as `({error})`                                   |
 | `onLoadingStart`  | `function`             | `undefined`     | Function / Promise to resolve when a loading action begins (fetching posts, uploads etc.)                       |

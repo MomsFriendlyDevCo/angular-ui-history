@@ -61,6 +61,7 @@ angular.module('angular-ui-history',[
 		tags: '<?',
 		userAvatar: '@?',
 		baseUrlImage: '<?',
+		mentionUrl: '<?',
 	},
 	template: `
 		<div class="ui-history">
@@ -109,9 +110,10 @@ angular.module('angular-ui-history',[
 					<ui-history-editor
 						buttons="$ctrl.buttons"
 						templates="$ctrl.templates"
-						on-post="$ctrl.makePost(body, tags)"
+						on-post="$ctrl.makePost(body, tags, mentions)"
 						tags="$ctrl.tags"
 						base-url-image="$ctrl.baseUrlImage"
+						mention-url="$ctrl.mentionUrl"
 					></ui-history-editor>
 				</div>
 				<hr/>
@@ -236,7 +238,9 @@ angular.module('angular-ui-history',[
 					<ui-history-editor
 						buttons="$ctrl.buttons"
 						templates="$ctrl.templates"
-						on-post="$ctrl.makePost(body, tags)"
+						on-post="$ctrl.makePost(body, tags, mentions)"
+						base-url-image="$ctrl.baseUrlImage"
+						mention-url="$ctrl.mentionUrl"
 					></ui-history-editor>
 				</div>
 			</div>
@@ -310,7 +314,7 @@ angular.module('angular-ui-history',[
 		// .makePost - New post contents {{{
 		$ctrl.isPosting = false;
 
-		$ctrl.makePost = (body, tags) => {
+		$ctrl.makePost = (body, tags, mentions) => {
 			if (!$ctrl.allowPost) throw new Error('Posting not allowed');
 			if (!body) { // Silently forget if the user is trying to publish empty contents
 				$rootScope.$broadcast('angular-ui-history.empty-post');
@@ -330,7 +334,7 @@ angular.module('angular-ui-history',[
 				.then(()=> $ctrl.isPosting = true)
 				.then(()=> $http.post(resolvedUrl, {body, tags}))
 				.then(()=> $ctrl.refresh(true))
-				.then(()=> $rootScope.$broadcast('angular-ui-history.posted', body))
+				.then(()=> $rootScope.$broadcast('angular-ui-history.posted', body, mentions))
 				.catch(error => { if ($ctrl.onError) $ctrl.onError({error}) })
 				.finally(()=> $ctrl.isPosting = false);
 		};
@@ -412,12 +416,13 @@ angular.module('angular-ui-history',[
 		onPost: '&',
 		tags: '<?',
 		baseUrlImage: '<?',
+		mentionUrl: '<?',
 	},
 	template: `
 		<form ng-submit="$ctrl.makePost()" class="form-horizontal">
 			<div class="form-group">
 				<div class="col-sm-12">
-					<ng-quill-editor ng-model="$ctrl.newPost.body" on-content-changed="$ctrl.contentChanged()" modules="$ctrl.modules">
+					<ng-quill-editor ng-model="$ctrl.newPost.body" on-content-changed="$ctrl.contentChanged()" modules="$ctrl.modules" on-editor-created="$ctrl.editorCreated(editor)">
 						<!-- ng-quill toolbar config {{{ -->
 						<ng-quill-toolbar>
 							<div>
@@ -489,7 +494,7 @@ angular.module('angular-ui-history',[
 			</div>
 		</form>
 	`,
-	controller: function($scope, $q, $element, $debounce) {
+	controller: function($scope, $q, $element, $debounce, $http) {
 		var $ctrl = this;
 
 		// Quill setup {{{
@@ -533,12 +538,34 @@ angular.module('angular-ui-history',[
 				img.onerror = error => reject('Could not load image, please check that the file is accessible');
 			})
 		}
+
+		$ctrl.editorCreated = quill => $ctrl.quill = quill;
+
+		$ctrl.mentionList = () => {
+			const uniqueMentionList = {};
+
+			$ctrl.quill.getContents()
+				.ops
+				.filter(op => op.insert && op.insert.mention)
+				.map(op => op.insert.mention)
+				.forEach(mention => {
+					if (!uniqueMentionList[mention._id]) {
+						uniqueMentionList[mention._id] = {
+							_id: mention._id,
+							name: mention.value
+						}
+					}
+				});
+
+			return Object.values(uniqueMentionList);
+		};
+
 		// }}}
 
 		$ctrl.newPost = {body: ''};
 		$ctrl.makePost = ()=> {
 			if (!$ctrl.onPost) throw new Error('Post content provided but no onPost binding defined');
-			var ret = $ctrl.onPost({body: $ctrl.newPost.body, tags: $ctrl.newPost.tags});
+			var ret = $ctrl.onPost({ body: $ctrl.newPost.body, tags: $ctrl.newPost.tags, mentions: $ctrl.mentionUrl ? $ctrl.mentionList() : [] });
 			if (!ret) return; // Didn't return a promise - ignore
 			if (angular.isFunction(ret.then)) ret.then(()=> {
 				$ctrl.newPost = {body: ''};
@@ -576,6 +603,34 @@ angular.module('angular-ui-history',[
 			// Drag/drop images
 			if ($ctrl.baseUrlImage) {
 				$ctrl.modules.imageDrop = true;
+			}
+
+			if ($ctrl.mentionUrl) {
+				$ctrl.modules.mention = {
+					allowedChars: /^[A-Za-z\sÅÄÖåäö]*$/,
+					mentionDenotationChars: ['@'],
+					dataAttributes: ['_id'],
+					source: function(searchTerm, renderList) {
+						return $q.resolve()
+							.then(() => {
+								if (angular.isString($ctrl.mentionUrl) || angular.isFunction($ctrl.mentionUrl)) {
+									const resolvedUrl = angular.isString($ctrl.mentionUrl) ? $ctrl.mentionUrl : $ctrl.mentionUrl(searchTerm);
+									if (!resolvedUrl) return $q.reject(new Error('Resovled URL is empty'));
+
+									return $http.get(resolvedUrl)
+										.then(res => {
+											if (!angular.isArray(res.data)) {
+												throw new Error(`Expected mention feed at URL "${resolvedUrl}" to be an array but got something else`);
+											} else {
+												return res.data;
+											}
+										})
+								}
+							})
+							.then(matchedPeople => renderList(matchedPeople))
+							.catch(console.error)
+					}
+				};
 			}
 		};
 		// }}}

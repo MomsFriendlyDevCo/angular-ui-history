@@ -17,4 +17,6 @@ app.controller("historyExampleCtrl", function($scope) {
 	$scope.uploadStart = files => console.log('Upload started', files);
 	$scope.uploadProgress = (files, progress) => console.log('Upload progress', progress, files);
 	$scope.uploadEnd = files => console.log('Upload complete', files);
+
+	$scope.getUsers = searchTerm => `/api/users?q=${searchTerm}`;
 });

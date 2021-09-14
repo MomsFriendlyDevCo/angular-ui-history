@@ -30,6 +30,8 @@ This module also requires several third party dependencies to be exposed:
 <script src="/libs/quill/dist/quill.min.js"></script>
 <script src="/libs/ng-quill/dist/ng-quill.min.js"></script>
 <script src="/libs/quill-image-drop-module/image-drop.min.js"></script>
+<script src="/libs/quill-mention/dist/quill.mention.min.js"></script>
+<link rel="stylesheet" href="/libs/quill-mention/dist/quill.mention.min.css">
 <link rel="stylesheet" href="/libs/quill/dist/quill.snow.css">
 ```
 
