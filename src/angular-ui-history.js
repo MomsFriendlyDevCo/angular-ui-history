@@ -61,6 +61,7 @@ angular.module('angular-ui-history',[
 		tags: '<?',
 		userAvatar: '@?',
 		baseUrlImage: '<?',
+		imagesUploadUrl: '<?',
 		mentionUrl: '<?',
 	},
 	template: `
@@ -113,6 +114,7 @@ angular.module('angular-ui-history',[
 						on-post="$ctrl.makePost(body, tags, mentions)"
 						tags="$ctrl.tags"
 						base-url-image="$ctrl.baseUrlImage"
+						images-upload-url="$ctrl.imagesUploadUrl"
 						mention-url="$ctrl.mentionUrl"
 					></ui-history-editor>
 				</div>
@@ -240,6 +242,7 @@ angular.module('angular-ui-history',[
 						templates="$ctrl.templates"
 						on-post="$ctrl.makePost(body, tags, mentions)"
 						base-url-image="$ctrl.baseUrlImage"
+						images-upload-url="$ctrl.imagesUploadUrl"
 						mention-url="$ctrl.mentionUrl"
 					></ui-history-editor>
 				</div>
@@ -416,6 +419,7 @@ angular.module('angular-ui-history',[
 		onPost: '&',
 		tags: '<?',
 		baseUrlImage: '<?',
+		imagesUploadUrl: '<?',
 		mentionUrl: '<?',
 	},
 	template: `
@@ -503,13 +507,13 @@ angular.module('angular-ui-history',[
 
 		$ctrl.contentChanged = $debounce(() => {
 			$q.resolve()
-				.then(() => $ctrl.baseUrlImage ? null : $q.reject('SKIP'))
+				.then(() => $ctrl.baseUrlImage || $ctrl.imagesUploadUrl ? null : $q.reject('SKIP'))
 				.then(() => Array.from($element[0].querySelectorAll('img:not([src^="data:"])')))
 				.then(imgs => $q.all(
 					imgs.map(img => {
 						return $q.resolve()
 							.then(() => img.classList.add('img--loading'))
-							.then(() => $ctrl.convertImgToBase64URL(img.getAttribute('src')))
+							.then(() => $ctrl.imagesUploadUrl ? $http.post($ctrl.imagesUploadUrl, { src: img.getAttribute('src') }).then(res => res.data): $ctrl.convertImgToBase64URL(img.getAttribute('src')))
 							.then(res => img.setAttribute('src', res))
 							.finally(() => img.classList.remove('img--loading'))
 					})
@@ -608,6 +612,7 @@ angular.module('angular-ui-history',[
 			if ($ctrl.mentionUrl) {
 				$ctrl.modules.mention = {
 					allowedChars: /^[A-Za-z\sÅÄÖåäö]*$/,
+					minChars: 3,
 					mentionDenotationChars: ['@'],
 					dataAttributes: ['_id'],
 					source: function(searchTerm, renderList) {
@@ -622,7 +627,7 @@ angular.module('angular-ui-history',[
 											if (!angular.isArray(res.data)) {
 												throw new Error(`Expected mention feed at URL "${resolvedUrl}" to be an array but got something else`);
 											} else {
-												return res.data;
+												return res.data.map(d => ({ _id: d._id, value: d.name }));
 											}
 										})
 								}
