@@ -58,6 +58,7 @@ angular.module('angular-ui-history',[
 		onUploadStart: '&?',
 		onUploadProgress: '&?',
 		onUploadEnd: '&?',
+		onMakePost: '&?',
 		tags: '<?',
 		userAvatar: '@?',
 		baseUrlImage: '<?',
@@ -322,6 +323,10 @@ angular.module('angular-ui-history',[
 			if (!body) { // Silently forget if the user is trying to publish empty contents
 				$rootScope.$broadcast('angular-ui-history.empty-post');
 				return;
+			}
+
+			if (angular.isFunction($ctrl.onMakePost)) {
+				body = $ctrl.onMakePost({ body }) || '';
 			}
 
 			var resolvedUrl =
