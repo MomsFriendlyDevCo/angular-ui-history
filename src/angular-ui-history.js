@@ -632,7 +632,7 @@ angular.module('angular-ui-history',[
 											if (!angular.isArray(res.data)) {
 												throw new Error(`Expected mention feed at URL "${resolvedUrl}" to be an array but got something else`);
 											} else {
-												return res.data.map(d => ({ _id: d._id, value: d.name }));
+												return res.data.map(d => ({ _id: d._id, value: d.name })).filter(d => d.value.toLowerCase().includes(searchTerm.toLowerCase()));
 											}
 										})
 								}
