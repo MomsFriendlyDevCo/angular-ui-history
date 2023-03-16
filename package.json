@@ -1,6 +1,6 @@
 {
   "name": "@momsfriendlydevco/angular-ui-history",
-  "version": "1.4.18",
+  "version": "1.4.19",
   "description": "Simple history display component for Angular",
   "main": "dist/angular-ui-history.js",
   "scripts": {
@@ -24,7 +24,7 @@
     "body-parser": "^1.18.3",
     "express": "^4.16.3",
     "font-awesome": "^4.7.0",
-    "gulp": "^3.9.1",
+    "@momsfriendlydevco/gulpy": "^1.4.5",
     "gulp-babel": "^8.0.0",
     "gulp-clean-css": "^3.10.0",
     "gulp-gh-pages": "^0.5.4",
